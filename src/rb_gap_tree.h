@@ -41,7 +41,7 @@ rb_gap_tree_t *rb_right_rotate(rb_gap_tree_t *T, rb_gap_tree_t *Y);
 rb_gap_tree_t *rb_insert(rb_gap_tree_t *T, rb_gap_t g);
 rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z);
 size_t rb_size(rb_gap_tree_t *T);
-rb_gap_tree_iterator_t rb_get_iter(rg_gap_tree_t *T);
+rb_gap_tree_iterator_t rb_get_iter(rb_gap_tree_t *T);
 void rb_free(rb_gap_tree_t *T);
 
 #endif
