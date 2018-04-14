@@ -5,7 +5,7 @@
 rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 {
      // Get the number of jobs for the task that will occur within W.
-     int jobs = ceil(((double)W.exit - (double)tasks[j].r)/(double)tasks[j].p);
+     size_t jobs = ceil(((double)W.exit - (double)tasks[j].r)/(double)tasks[j].p);
      size_t q;
      for (q = 1; q <= jobs; q++)
      {
