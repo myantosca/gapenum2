@@ -1,3 +1,6 @@
+#ifndef __RB_GAP_TREE_H
+#define __RB_GAP_TREE_H
+
 #include <stdlib.h>
 #include <sys/types.h>
 
@@ -31,3 +34,5 @@ rb_gap_tree_t *rb_right_rotate(rb_gap_tree_t *T, rb_gap_tree_t *Y);
 rb_gap_tree_t *rb_insert(rb_gap_tree_t *T, rb_gap_t g);
 rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z);
 void rb_free(rb_gap_tree_t *T);
+
+#endif
