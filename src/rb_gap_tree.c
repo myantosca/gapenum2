@@ -3,14 +3,14 @@
 
 rb_gap_tree_t *tree_minimum(rb_gap_tree_t *X)
 {
-     if (!X) return NULL;     
+     if (!X) return NULL;
      while (X->left) X = X->left;
      return X;
 }
 
 rb_gap_tree_t *tree_successor(rb_gap_tree_t *X)
 {
-     if (!X) return NULL;     
+     if (!X) return NULL;
      rb_gap_tree_t *Y = NULL;
      if (X->right) return tree_minimum(X);
      Y = X->parent;
@@ -31,7 +31,7 @@ rb_gap_tree_t *rb_left_rotate(rb_gap_tree_t *T, rb_gap_tree_t *X)
      Y->parent = X->parent;
      if (!X->parent)
      {
-	  T = Y; 
+	  T = Y;
      }
      else if (X == X->parent->left)
      {
@@ -146,7 +146,7 @@ rb_gap_tree_t *rb_insert(rb_gap_tree_t *T, rb_gap_t g)
 		    Z->parent->color = BLACK;
 		    Z->parent->parent->color = RED;
 		    T = rb_left_rotate(T, Z->parent->parent);
-	       }	       
+	       }
 	  }
      }
      T->color = BLACK;
@@ -240,7 +240,7 @@ rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z)
      else if (Y == Y->parent->left)
      {
 	  Y->parent->left = X;
-     }     
+     }
      else
      {
 	  Y->parent->right = X;
