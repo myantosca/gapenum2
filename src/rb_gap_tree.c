@@ -276,3 +276,25 @@ size_t rb_size(rb_gap_tree_t *T)
      }
      return n;
 }
+
+
+void _rb_get_iter(rb_gap_tree_t *T, rb_gap_tree_iterator_t *iter, size_t *i)
+{
+     if (T)
+     {
+	  _rb_get_iter(T->left);
+	  iter->nodes[i] = T;
+	  *i++;
+	  _rb_get_iter(T->right);
+     }
+}x
+
+rb_gap_iterator_t rb_get_iter(rb_gap_tree_t *T)
+{
+     rb_gap_iterator_t iter;
+     iter.size = rb_size(T);
+     iter.nodes = malloc(sizeof(rb_gap_tree_t *) * size);
+     int i = 0;
+     _rb_get_iter(T, &iter, &i);
+     return iter;
+}
