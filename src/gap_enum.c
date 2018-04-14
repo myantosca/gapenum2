@@ -80,6 +80,31 @@ rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c)
      return gap;
 }
 
-rb_time_t gap_enum(task_t *tasks, int j, int windows)
+rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 {
+     rb_time_t w = ceil((double)tasks[j].p/(double)windows);
+     rb_time_t L = w;
+     rb_time_t U = tasks[j].p + w;
+     while (L < U)
+     {
+	  rb_gap_tree_t *gaps = rb_insert(NULL, (rb_gap_t){ 0, tasks[j].p });
+	  int i;
+	  for (i = n; i >= j + 1; i--)
+	  {
+	       rb_gap_tree_t *gaps2 = gap_xfrm((rb_gap_t){ 0, L }, gaps, tasks, i);
+	       if (!gaps)
+	       {
+		    rb_free(gaps);
+		    return -1;
+	       }
+	       gaps = gaps2;
+	  }
+	  rb_gap_t gap = gap_srch(gaps, tasks[j].c);
+	  rb_time_t rt_j;
+	  if (gap.entry > 0) rt_j = gap.entry + tasks[j].c;
+	  if (rt_j < tasks[j].p) return rt_j;
+	  rb_free(gaps);
+	  L += w;
+     }
+     return -1;
 }
