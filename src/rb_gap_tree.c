@@ -12,7 +12,7 @@ rb_gap_tree_t *tree_successor(rb_gap_tree_t *X)
 {
      if (!X) return NULL;
      rb_gap_tree_t *Y = NULL;
-     if (X->right) return tree_minimum(X);
+     if (X->right) return tree_minimum(X->right);
      Y = X->parent;
      while (Y && (X == Y->right))
      {
