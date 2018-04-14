@@ -102,6 +102,11 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 	  rb_gap_t gap = gap_srch(gaps, tasks[j].c);
 	  rb_time_t rt_j;
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
+	  if (rt_j < tasks[j].p)
+	  {
+	       rb_free(gaps);
+	       return rt_j;
+	  }
 	  rb_free(gaps);
 	  L += w;
      }
