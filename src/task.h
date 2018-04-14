@@ -2,12 +2,15 @@
 #define __TASK_H
 
 #include <stdlib.h>
+#include <sys/types.h>
+
+typedef int64_t task_time_t;
 
 typedef struct task
 {
-  int r; // task release
-  int c; // computation time
-  int p; // task period
+  task_time_t r; // task release
+  task_time_t c; // computation time
+  task_time_t p; // task period
 } task_t;
 
 #endif
