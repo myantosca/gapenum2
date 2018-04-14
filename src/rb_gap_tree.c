@@ -252,3 +252,15 @@ rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z)
      if (Y->color == BLACK) T = rb_delete_fixup(T, X);
      return T;
 }
+
+void rb_free(rb_gap_tree_t *T)
+{
+     if (T)
+     {
+	  rb_gap_tree_t *L = T->left;
+	  rb_gap_tree_t *R = T->right;
+	  rb_free(L);
+	  free(T);
+	  rb_free(R);
+     }
+}
