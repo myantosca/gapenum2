@@ -45,7 +45,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 			 gaps = rb_insert(gaps, (rb_gap_t){t, t2});
 			 break;
 		    }
-		    // Job fits with slack at the end.
+		    // Job does not fit.
 		    if (t + tasks[j].c > t2)
 		    {
 			 gaps = rb_insert(gaps, (rb_gap_t){t1, t2});
