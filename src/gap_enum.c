@@ -13,13 +13,9 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
      {
 	  // Initialize the time counter to the current job's release time.
 	  rb_time_t t = tasks[j].r + (q-1) * tasks[j].p;
-	  // Get an in-order, by-item iterator for the tree.
-	  rb_gap_tree_iterator_t iter = rb_get_iter(gaps);
-	  // Loop over the tree nodes (k-gaps).
-	  int k;
-	  for (k = 0; k < iter.size; k++)
+	  rb_gap_tree_t *k_gap = gaps;
+	  while (k_gap)
 	  {
-	       rb_gap_tree_t *k_gap = iter.nodes[k];
 	       rb_time_t t1 = k_gap->gap.entry;
 	       rb_time_t t2 = k_gap->gap.exit;
 	       // No gap exists that can accommodate the current job. Bail.
@@ -34,6 +30,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 		    gaps = rb_delete(gaps, k_gap);
 		    // Clean up the memory occupied by the node.
 		    free(k_gap);
+		    k_gap = NULL;
 		    // Job fits with slack at the start.
 		    if (t + tasks[j].c == t2)
 		    {
@@ -53,8 +50,8 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 			 gaps = rb_insert(gaps, (rb_gap_t){t1, t});
 		    }
 	       }
+	       k_gap = tree_successor(k_gap);
 	  }
-	  free(iter.nodes);
      }
 
      // Return the modified gap tree.
