@@ -109,7 +109,7 @@ rb_gap_tree_t *rb_insert(rb_gap_tree_t *T, rb_gap_t g)
 	       if (Y && Y->color == RED)
 	       {
 		    Z->parent->color = BLACK;
-		    Z->color = BLACK;
+		    Y->color = BLACK;
 		    Z->parent->parent->color = RED;
 		    Z = Z->parent->parent;
 	       }
@@ -132,7 +132,7 @@ rb_gap_tree_t *rb_insert(rb_gap_tree_t *T, rb_gap_t g)
 	       if (Y && Y->color == RED)
 	       {
 		    Z->parent->color = BLACK;
-		    Z->color = BLACK;
+		    Y->color = BLACK;
 		    Z->parent->parent->color = RED;
 		    Z = Z->parent->parent;
 	       }
