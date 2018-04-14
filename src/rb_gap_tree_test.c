@@ -4,21 +4,6 @@
 
 #include "rb_gap_tree.h"
 
-
-size_t sprintf_rb_gap_tree(char *buf, rb_gap_tree_t *T)
-{
-     char *beg = buf;
-     if (T)
-     {
-	  buf += sprintf(buf, "(");
-	  buf += sprintf_rb_gap_tree(buf, T->left);
-	  buf += sprintf(buf, "%c{%ld,%ld}", T->color ? 'R' : 'B', T->gap.entry, T->gap.exit);
-	  buf += sprintf_rb_gap_tree(buf, T->right);
-	  buf += sprintf(buf, ")");
-     }
-     return buf - beg;
-}
-
 int assert_rb_gap_tree_form(const char *label, const char* truth, rb_gap_tree_t *T)
 {
      char buf[1024];

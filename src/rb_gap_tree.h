@@ -2,6 +2,7 @@
 #define __RB_GAP_TREE_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/types.h>
 
 typedef enum rb_color
@@ -43,5 +44,6 @@ rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z);
 size_t rb_size(rb_gap_tree_t *T);
 rb_gap_tree_iterator_t rb_get_iter(rb_gap_tree_t *T);
 void rb_free(rb_gap_tree_t *T);
+size_t sprintf_rb_gap_tree(char *buf, rb_gap_tree_t *T);
 
 #endif

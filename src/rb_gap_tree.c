@@ -298,3 +298,17 @@ rb_gap_tree_iterator_t rb_get_iter(rb_gap_tree_t *T)
      _rb_get_iter(T, &iter, &i);
      return iter;
 }
+
+size_t sprintf_rb_gap_tree(char *buf, rb_gap_tree_t *T)
+{
+     char *beg = buf;
+     if (T)
+     {
+	  buf += sprintf(buf, "(");
+	  buf += sprintf_rb_gap_tree(buf, T->left);
+	  buf += sprintf(buf, "%c{%ld,%ld}", T->color ? 'R' : 'B', T->gap.entry, T->gap.exit);
+	  buf += sprintf_rb_gap_tree(buf, T->right);
+	  buf += sprintf(buf, ")");
+     }
+     return buf - beg;
+}
