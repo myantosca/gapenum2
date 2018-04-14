@@ -1,5 +1,7 @@
 #include <math.h>
+#include <string.h>
 
+#include "rb_gap_tree.h"
 #include "gap_enum.h"
 
 rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
@@ -42,13 +44,13 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 		    if (t + tasks[j].c < t2)
 		    {
 			 gaps = rb_insert(gaps, (rb_gap_t){t1, t});
-			 gaps = rb_insert(gaps, (rb_gap_t){t, t2});
+			 gaps = rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2});
 			 break;
 		    }
-		    // Job does not fit.
+		    // Job does not fit. Model the abort.
 		    if (t + tasks[j].c > t2)
 		    {
-			 gaps = rb_insert(gaps, (rb_gap_t){t1, t2});
+			 gaps = rb_insert(gaps, (rb_gap_t){t1, t});
 		    }
 	       }
 	  }
@@ -85,6 +87,7 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
      rb_time_t w = ceil((double)tasks[j].p/(double)windows);
      rb_time_t L = w;
      rb_time_t U = tasks[j].p + w;
+     char buf[8192];
      while (L < U)
      {
 	  rb_gap_tree_t *gaps = rb_insert(NULL, (rb_gap_t){ 0, tasks[j].p });
@@ -94,11 +97,20 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 	       rb_gap_tree_t *gaps2 = gap_xfrm((rb_gap_t){ 0, L }, gaps, tasks, i);
 	       if (!gaps2)
 	       {
+		    memset(buf, 0, 8192);
+		    sprintf_rb_gap_tree(buf, gaps);
+		    printf("%d: %s\n", i, buf);
 		    rb_free(gaps);
 		    return -1;
 	       }
 	       gaps = gaps2;
+	       memset(buf, 0, 8192);
+	       sprintf_rb_gap_tree(buf, gaps);
+	       printf("%d: %s\n", i, buf);
 	  }
+	  memset(buf, 0, 8192);
+	  sprintf_rb_gap_tree(buf, gaps);
+	  printf("%d: %s\n", i, buf);
 	  rb_gap_t gap = gap_srch(gaps, tasks[j].c);
 	  rb_time_t rt_j;
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
