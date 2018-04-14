@@ -1,6 +1,8 @@
+#include <math.h>
+
 #include "gap_enum.h"
 
-rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks)
+rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 {
      return NULL;
 }
