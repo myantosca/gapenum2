@@ -264,3 +264,15 @@ void rb_free(rb_gap_tree_t *T)
 	  rb_free(R);
      }
 }
+
+size_t rb_size(rb_gap_tree_t *T)
+{
+     size_t n = 0;
+     if (T)
+     {
+	  n += rb_size(T->left);
+	  n++;
+	  n += rb_size(T->right);
+     }
+     return n;
+}
