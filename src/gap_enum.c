@@ -92,7 +92,7 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 	  for (i = n-1; i > j; i--)
 	  {
 	       rb_gap_tree_t *gaps2 = gap_xfrm((rb_gap_t){ 0, L }, gaps, tasks, i);
-	       if (!gaps)
+	       if (!gaps2)
 	       {
 		    rb_free(gaps);
 		    return -1;
