@@ -221,7 +221,7 @@ rb_gap_tree_t *rb_delete_fixup(rb_gap_tree_t *T, rb_gap_tree_t *X)
 	       }
 	  }
      }
-     X->color = BLACK;
+     if (X) X->color = BLACK;
      return T;
 }
 
