@@ -21,7 +21,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 	       rb_time_t t1 = k_gap->gap.entry;
 	       rb_time_t t2 = k_gap->gap.exit;
 	       // No gap exists that can accommodate the current job. Bail.
-	       if (t1 < t + tasks[j].p) return NULL;
+	       if (t1 > t + tasks[j].p) return NULL;
 
 	       // Bump effective release time to current gap under examination.
 	       if (t < t1) t = t1;
