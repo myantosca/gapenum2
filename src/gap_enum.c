@@ -50,7 +50,8 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 			 rb_insert(gaps, (rb_gap_t){t1, t});
 		    }
 	       }
-	       k_gap = tree_successor(gaps, k_gap);
+
+	       if (k_gap->gap.entry == t1) k_gap = tree_successor(gaps, k_gap);
 	  }
      }
 
