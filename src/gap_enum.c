@@ -88,7 +88,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows)
      while (L < U)
      {
 	  rb_gap_tree_t *gaps = alloc_rb_gap_tree();
-	  rb_insert(gaps, (rb_gap_t){ 0, tasks[j].p });
+	  rb_insert(gaps, (rb_gap_t){ 0, L });
 	  int i;
 	  for (i = n-1; i > j; i--)
 	  {
