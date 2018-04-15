@@ -35,14 +35,12 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 		    if (t + tasks[j].c == t2)
 		    {
 			 rb_insert(gaps, (rb_gap_t){ t1, t });
-			 break;
 		    }
 		    // Job fits with slack on either side.
 		    if (t + tasks[j].c < t2)
 		    {
 			 rb_insert(gaps, (rb_gap_t){t1, t});
 			 rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2});
-			 break;
 		    }
 		    // Job does not fit. Model the abort.
 		    if (t + tasks[j].c > t2)
