@@ -19,6 +19,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 	  {
 	       rb_time_t t1 = k_gap->gap.entry;
 	       rb_time_t t2 = k_gap->gap.exit;
+	       rb_gap_node_t *free_gap = NULL;
 	       // No gap exists that can accommodate the current job. Bail.
 	       if (t1 > t + tasks[j].p) return NULL;
 
@@ -28,14 +29,14 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 	       if ((t1 <= t) && (t < t2))
 	       {
 		    // Remove the gap from the tree.
-		    rb_gap_node_t *free_gap = rb_delete(gaps, k_gap);
-		    // Clean up the memory occupied by the spliced node.
-		    if (free_gap) free(free_gap);
-		    free_gap = NULL;
+		    free_gap = rb_delete(gaps, k_gap);
 		    // Job fits with slack at the start.
 		    if (t + tasks[j].c == t2)
 		    {
 			 rb_insert(gaps, (rb_gap_t){ t1, t });
+			 // Clean up the memory occupied by the spliced node.
+			 if (free_gap) free(free_gap);
+			 free_gap = NULL;
 			 break;
 		    }
 		    // Job fits with slack on either side.
@@ -43,6 +44,9 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 		    {
 			 rb_insert(gaps, (rb_gap_t){t1, t});
 			 rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2});
+			 // Clean up the memory occupied by the spliced node.
+			 if (free_gap) free(free_gap);
+			 free_gap = NULL;
 			 break;
 		    }
 		    // Job does not fit. Model the abort.
@@ -53,6 +57,9 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 	       }
 
 	       if (k_gap->gap.entry == t1) k_gap = tree_successor(gaps, k_gap);
+	       // Clean up the memory occupied by the spliced node.
+	       if (free_gap) free(free_gap);
+	       free_gap = NULL;
 	  }
      }
 
