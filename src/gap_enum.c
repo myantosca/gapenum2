@@ -77,9 +77,9 @@ rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c)
      return gap;
 }
 
-rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
+rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows)
 {
-     rb_time_t w = ceil((double)tasks[j].p/(double)windows);
+     rb_time_t w = (rb_time_t)ceil((double)tasks[j].p/(double)windows);
      rb_time_t L = w;
      rb_time_t U = tasks[j].p + w;
      char buf[8192];
