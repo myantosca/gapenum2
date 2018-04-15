@@ -43,7 +43,7 @@ int assert_rb_gap_tree_props(const char *label, size_t size, const rb_gap_t *mem
      return ok;
 }
 
-const rb_gap_t members_0_to_8[8] = {{0,1},{1,2},{2,3},{4,5},{5,6},{6,7},{7,8}};
+const rb_gap_t members_0_to_7[8] = {{0,1},{1,2},{2,3},{3,4},{4,5},{5,6},{6,7},{7,8}};
 
 void print_rb_gap_tree(rb_gap_tree_t *T)
 {
@@ -59,33 +59,37 @@ int main()
      print_rb_gap_tree(T);
      assert_rb_gap_tree_props("empty tree", 0, NULL, T);
 
-     rb_insert(T, (rb_gap_t){ 0, 1 });
-     print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert empty", 1, members_0_to_8, T);
-     
      rb_insert(T, (rb_gap_t){ 1, 2 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (1)", 2, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (1)", 1, members_0_to_7+1, T);
 
      rb_insert(T, (rb_gap_t){ 2, 3 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (2)", 3, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (2)", 2, members_0_to_7+1, T);
+
+     rb_insert(T, (rb_gap_t){ 3, 4 });
+     print_rb_gap_tree(T);
+     assert_rb_gap_tree_props("insert right (3)", 3, members_0_to_7+1, T);
 
      rb_insert(T, (rb_gap_t){ 4, 5 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (3)", 4, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (4)", 4, members_0_to_7+1, T);
 
      rb_insert(T, (rb_gap_t){ 5, 6 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (4)", 5, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (5)", 5, members_0_to_7+1, T);
 
      rb_insert(T, (rb_gap_t){ 6, 7 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (5)", 6, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (6)", 6, members_0_to_7+1, T);
 
      rb_insert(T, (rb_gap_t){ 7, 8 });
      print_rb_gap_tree(T);
-     assert_rb_gap_tree_props("insert right (6)", 7, members_0_to_8, T);
+     assert_rb_gap_tree_props("insert right (7)", 7, members_0_to_7+1, T);
+
+     rb_insert(T, (rb_gap_t){ 0, 1 });
+     print_rb_gap_tree(T);
+     assert_rb_gap_tree_props("insert left (8)", 8, members_0_to_7, T);
 
      free_rb_gap_tree(T);
 
