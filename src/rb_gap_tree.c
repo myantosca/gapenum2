@@ -26,7 +26,7 @@ rb_gap_node_t *tree_minimum(rb_gap_tree_t *T, rb_gap_node_t *X)
 rb_gap_node_t *tree_successor(rb_gap_tree_t *T, rb_gap_node_t *X)
 {
      if (!T || !X) return NULL;
-     if (X->right) return tree_minimum(T, X->right);
+     if (X->right != T->nil) return tree_minimum(T, X->right);
      rb_gap_node_t *Y = X->parent;
      while ((Y != T->nil) && (X == Y->right))
      {
