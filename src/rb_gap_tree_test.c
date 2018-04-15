@@ -4,50 +4,40 @@
 
 #include "rb_gap_tree.h"
 
-int assert_rb_gap_tree_form(const char *label, const char* truth, rb_gap_tree_t *T)
-{
-     char buf[1024];
-     memset(buf,0,1024);
-     sprintf_rb_gap_tree(buf, T);
-     int ok = !strcmp(truth, buf);
-     printf("%s, %s: %s == %s\n", ok ? "PASS" : "FAIL", label, truth, buf);
-     return ok;
-}
-
-int _assert_rb_gap_tree_props(size_t size, const rb_gap_t *members, rb_gap_tree_t *T, int bh, int *i)
+int _assert_rb_gap_tree_props(size_t size, const rb_gap_t *members, rb_gap_tree_t *T, rb_gap_node_t *X, int bh, int *i)
 {
      int ok;
-     if (!T)
+     if (X == T->nil)
      {
 	  ok = (bh == 0);
      }
      else
      {
-	  ok = _assert_rb_gap_tree_props(size, members, T->left, bh - (T->color == BLACK ? 1 : 0), i);
+	  ok = _assert_rb_gap_tree_props(size, members, T, X->left, bh - (X->color == BLACK ? 1 : 0), i);
 	  ok = ok &&
-	       ((T->color == BLACK) ||
-		((T->color == RED) &&
-		 ((!T->left) || (T->left->color == BLACK)) &&
-		 ((!T->right) || (T->right->color == BLACK)))) &&
-	       (T->gap.entry == members[*i].entry) &&
-	       (T->gap.exit == members[*i].exit);
+	       ((X->color == BLACK) ||
+		((X->color == RED) &&
+		 ((!X->left) || (X->left->color == BLACK)) &&
+		 ((!X->right) || (X->right->color == BLACK)))) &&
+	       (X->gap.entry == members[*i].entry) &&
+	       (X->gap.exit == members[*i].exit);
 	  (*i)++;
-	  ok = ok && _assert_rb_gap_tree_props(size, members, T->right, bh - (T->color == BLACK ? 1 : 0), i);
+	  ok = ok && _assert_rb_gap_tree_props(size, members, T, X->right, bh - (X->color == BLACK ? 1 : 0), i);
      }
      return ok;
 }
 
 int assert_rb_gap_tree_props(const char *label, size_t size, const rb_gap_t *members, rb_gap_tree_t *T)
 {
-     rb_gap_tree_t *U = T;
+     rb_gap_node_t *U = T->root;
      int bh = 0;
-     while (U)
+     while (U != T->nil)
      {
 	  bh += (U->color == BLACK) ? 1 : 0;
 	  U = U->left;
      }
      int i = 0;
-     int ok = _assert_rb_gap_tree_props(size, members, T, bh, &i);
+     int ok = _assert_rb_gap_tree_props(size, members, T, T->root, bh, &i);
      ok = ok && (size == i);
      printf("[%s] %s\n", ok ? "PASS" : "FAIL", label);
      return ok;
@@ -55,33 +45,49 @@ int assert_rb_gap_tree_props(const char *label, size_t size, const rb_gap_t *mem
 
 const rb_gap_t members_0_to_8[8] = {{0,1},{1,2},{2,3},{4,5},{5,6},{6,7},{7,8}};
 
+void print_rb_gap_tree(rb_gap_tree_t *T)
+{
+     char buf[8192];
+     memset(buf, 0, 8192);
+     sprintf_rb_gap_tree(buf, T);
+     printf("%s\n", buf);
+}
+
 int main()
 {
-     rb_gap_tree_t *T = NULL;
+     rb_gap_tree_t *T = alloc_rb_gap_tree();
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("empty tree", 0, NULL, T);
 
-     T = rb_insert(T, (rb_gap_t){ 0, 1 });
+     rb_insert(T, (rb_gap_t){ 0, 1 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert empty", 1, members_0_to_8, T);
-
-     T = rb_insert(T, (rb_gap_t){ 1, 2 });
+     
+     rb_insert(T, (rb_gap_t){ 1, 2 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (1)", 2, members_0_to_8, T);
 
-     T = rb_insert(T, (rb_gap_t){ 2, 3 });
+     rb_insert(T, (rb_gap_t){ 2, 3 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (2)", 3, members_0_to_8, T);
 
-     T = rb_insert(T, (rb_gap_t){ 4, 5 });
+     rb_insert(T, (rb_gap_t){ 4, 5 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (3)", 4, members_0_to_8, T);
 
-     T = rb_insert(T, (rb_gap_t){ 5, 6 });
+     rb_insert(T, (rb_gap_t){ 5, 6 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (4)", 5, members_0_to_8, T);
 
-     T = rb_insert(T, (rb_gap_t){ 6, 7 });
+     rb_insert(T, (rb_gap_t){ 6, 7 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (5)", 6, members_0_to_8, T);
 
-     T = rb_insert(T, (rb_gap_t){ 7, 8 });
+     rb_insert(T, (rb_gap_t){ 7, 8 });
+     print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (6)", 7, members_0_to_8, T);
 
-     rb_free(T);
+     free_rb_gap_tree(T);
 
      T = NULL;
 

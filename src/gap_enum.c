@@ -13,8 +13,8 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
      {
 	  // Initialize the time counter to the current job's release time.
 	  rb_time_t t = tasks[j].r + (q-1) * tasks[j].p;
-	  rb_gap_tree_t *k_gap = gaps;
-	  while (k_gap)
+	  rb_gap_node_t *k_gap = tree_minimum(gaps, gaps->root);
+	  while (k_gap != gaps->nil)
 	  {
 	       rb_time_t t1 = k_gap->gap.entry;
 	       rb_time_t t2 = k_gap->gap.exit;
@@ -27,30 +27,30 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
 	       if ((t1 <= t) && (t < t2))
 	       {
 		    // Remove the gap from the tree.
-		    gaps = rb_delete(gaps, k_gap);
-		    // Clean up the memory occupied by the node.
-		    free(k_gap);
-		    k_gap = NULL;
+		    rb_gap_node_t *free_gap = rb_delete(gaps, k_gap);
+		    // Clean up the memory occupied by the spliced node.
+		    if (free_gap) free(free_gap);
+		    free_gap = NULL;
 		    // Job fits with slack at the start.
 		    if (t + tasks[j].c == t2)
 		    {
-			 gaps = rb_insert(gaps, (rb_gap_t){ t1, t });
+			 rb_insert(gaps, (rb_gap_t){ t1, t });
 			 break;
 		    }
 		    // Job fits with slack on either side.
 		    if (t + tasks[j].c < t2)
 		    {
-			 gaps = rb_insert(gaps, (rb_gap_t){t1, t});
-			 gaps = rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2});
+			 rb_insert(gaps, (rb_gap_t){t1, t});
+			 rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2});
 			 break;
 		    }
 		    // Job does not fit. Model the abort.
 		    if (t + tasks[j].c > t2)
 		    {
-			 gaps = rb_insert(gaps, (rb_gap_t){t1, t});
+			 rb_insert(gaps, (rb_gap_t){t1, t});
 		    }
 	       }
-	       k_gap = tree_successor(k_gap);
+	       k_gap = tree_successor(gaps, k_gap);
 	  }
      }
 
@@ -58,24 +58,24 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
      return gaps;
 }
 
-rb_gap_tree_t *_gap_srch(rb_gap_tree_t *gaps, rb_time_t c, rb_gap_t *gap)
+void _gap_srch(rb_gap_tree_t *T, rb_gap_node_t *X, rb_time_t c, rb_gap_t *gap)
 {
-     if (gaps)
+     if (X != T->nil)
      {
-	  if (gap->entry < 0) _gap_srch(gaps->left, c, gap);
-	  if ((gap->entry < 0) && (c <= gaps->gap.exit - gaps->gap.entry))
+	  if (gap->entry < 0) _gap_srch(T, X->left, c, gap);
+	  if ((gap->entry < 0) && (c <= X->gap.exit - X->gap.entry))
 	  {
-	       gap->entry = gaps->gap.entry;
-	       gap->exit = gaps->gap.exit;
+	       gap->entry = X->gap.entry;
+	       gap->exit = X->gap.exit;
 	  }
-	  if (gap->entry < 0) _gap_srch(gaps->right, c, gap);
+	  if (gap->entry < 0) _gap_srch(T, X->right, c, gap);
      }
 }
 
 rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c)
 {
      rb_gap_t gap = { -1, 0 };
-     _gap_srch(gaps, c, &gap);
+     _gap_srch(gaps, gaps->root, c, &gap);
      return gap;
 }
 
@@ -87,7 +87,8 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
      char buf[8192];
      while (L < U)
      {
-	  rb_gap_tree_t *gaps = rb_insert(NULL, (rb_gap_t){ 0, tasks[j].p });
+	  rb_gap_tree_t *gaps = alloc_rb_gap_tree();
+	  rb_insert(gaps, (rb_gap_t){ 0, tasks[j].p });
 	  int i;
 	  for (i = n-1; i > j; i--)
 	  {
@@ -97,10 +98,9 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 		    memset(buf, 0, 8192);
 		    sprintf_rb_gap_tree(buf, gaps);
 		    printf("%d: %s\n", i, buf);
-		    rb_free(gaps);
+		    free_rb_gap_tree(gaps);
 		    return -1;
 	       }
-	       gaps = gaps2;
 	       memset(buf, 0, 8192);
 	       sprintf_rb_gap_tree(buf, gaps);
 	       printf("%d: %s\n", i, buf);
@@ -113,10 +113,10 @@ rb_time_t gap_enum(task_t *tasks, int n, int j, int windows)
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
 	  if (rt_j < tasks[j].p)
 	  {
-	       rb_free(gaps);
+	       free_rb_gap_tree(gaps);
 	       return rt_j;
 	  }
-	  rb_free(gaps);
+	  free_rb_gap_tree(gaps);
 	  L += w;
      }
      return -1;
