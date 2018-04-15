@@ -227,7 +227,7 @@ rb_gap_tree_t *rb_delete_fixup(rb_gap_tree_t *T, rb_gap_tree_t *X)
 
 rb_gap_tree_t *rb_delete(rb_gap_tree_t *T, rb_gap_tree_t *Z)
 {
-     if (!T || !Z) return NULL;
+     if (!T || !Z) return T;
      rb_gap_tree_t *Y = NULL;
      rb_gap_tree_t *X = NULL;
      Y = (!Z->left || !Z->right) ? Z : tree_successor(Z);
