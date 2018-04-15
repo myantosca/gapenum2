@@ -166,11 +166,6 @@ void rb_insert(rb_gap_tree_t *T, rb_gap_t g)
 
 void rb_delete_fixup(rb_gap_tree_t *T, rb_gap_node_t *X)
 {
-     char buf[8192];
-     memset(buf, 0, 8192);
-     sprintf_rb_gap_tree(buf, T);
-     printf("%s\n", buf);
-
      while ((X != T->root) && (X->color == BLACK))
      {
 	  rb_gap_node_t *W = T->nil;

@@ -102,13 +102,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows)
 		    free_rb_gap_tree(gaps);
 		    return -1;
 	       }
-	       memset(buf, 0, 8192);
-	       sprintf_rb_gap_tree(buf, gaps);
-	       printf("%d: %s\n", i, buf);
 	  }
-	  memset(buf, 0, 8192);
-	  sprintf_rb_gap_tree(buf, gaps);
-	  printf("%d: %s\n", i, buf);
 	  rb_gap_t gap = gap_srch(gaps, tasks[j].c);
 	  rb_time_t rt_j;
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
