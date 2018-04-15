@@ -9,6 +9,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j)
      // Get the number of jobs for the task that will occur within W.
      size_t jobs = ceil(((double)W.exit - (double)tasks[j].r)/(double)tasks[j].p);
      size_t q;
+     char buf[8192];
      for (q = 1; q <= jobs; q++)
      {
 	  // Initialize the time counter to the current job's release time.
@@ -108,6 +109,9 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows)
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
 	  if (rt_j < tasks[j].p)
 	  {
+	       memset(buf, 0, 8192);
+	       sprintf_rb_gap_tree(buf, gaps);
+	       printf("%d: %s\n", i, buf);
 	       free_rb_gap_tree(gaps);
 	       return rt_j;
 	  }
