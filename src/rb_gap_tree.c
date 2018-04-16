@@ -293,18 +293,22 @@ void free_rb_gap_tree(rb_gap_tree_t *T)
      }
 }
 
-/* size_t rb_size(rb_gap_tree_t *T) */
-/* { */
-/*      size_t n = 0; */
-/*      if (T) */
-/*      { */
-/* 	  n += rb_size(T->left); */
-/* 	  n++; */
-/* 	  n += rb_size(T->right); */
-/*      } */
-/*      return n; */
-/* } */
+size_t _rb_size(rb_gap_tree_t *T, rb_gap_node_t *X)
+{
+     size_t n = 0;
+     if (X != T->nil)
+     {
+	  n += _rb_size(T, X->left);
+	  n++;
+	  n += _rb_size(T, X->right);
+     }
+     return n;
+}
 
+size_t rb_size(rb_gap_tree_t *T)
+{
+     return _rb_size(T, T->root);
+}
 
 size_t _sprintf_rb_gap_tree(char *buf, rb_gap_tree_t *T, rb_gap_node_t *X)
 {
