@@ -7,7 +7,8 @@
 
 int main(int argc, char *argv[])
 {
-     task_t tasks[32];
+     task_t tasks[8];
+     memset(tasks, 0, sizeof(task_t) * 8);
      size_t n = 0;
      int done = 0;
      rb_time_t rt_j = -1;
