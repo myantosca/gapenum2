@@ -122,7 +122,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_
 	       }
 	  }
 	  rb_gap_t gap = gap_srch(gaps, tasks[j].c, comp_steps);
-	  rb_time_t rt_j;
+	  rb_time_t rt_j = -1;
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
 	  if (rt_j < tasks[j].p)
 	  {
