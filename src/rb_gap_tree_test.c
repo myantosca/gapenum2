@@ -59,7 +59,7 @@ int main()
      print_rb_gap_tree(T);
      assert_rb_gap_tree_props("empty tree", 0, NULL, T);
 
-     int comp_steps = 0;
+     size_t comp_steps = 0;
      rb_insert(T, (rb_gap_t){ 1, 2 }, &comp_steps);
      print_rb_gap_tree(T);
      assert_rb_gap_tree_props("insert right (1)", 1, members_0_to_7+1, T);
