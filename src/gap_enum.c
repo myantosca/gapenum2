@@ -97,7 +97,7 @@ rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c, size_t *comp_steps)
      return gap;
 }
 
-rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_steps)
+rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_steps, size_t *gap_ct)
 {
      rb_time_t w = (rb_time_t)ceil((double)tasks[j].p/(double)windows);
      rb_time_t L = w;
@@ -114,6 +114,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_
 	       rb_gap_tree_t *gaps2 = gap_xfrm((rb_gap_t){ 0, L }, gaps, tasks, i, comp_steps);
 	       if (!gaps2)
 	       {
+		    *gap_ct = rb_size(gaps);
 		    memset(buf, 0, 8192);
 		    sprintf_rb_gap_tree(buf, gaps);
 		    fprintf(stderr, "%d: %s\n", i, buf);
@@ -126,6 +127,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
 	  if (rt_j < tasks[j].p)
 	  {
+	       *gap_ct = rb_size(gaps);
 	       memset(buf, 0, 8192);
 	       sprintf_rb_gap_tree(buf, gaps);
 	       fprintf(stderr, "%d: %s\n", i, buf);
@@ -135,5 +137,6 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_
 	  free_rb_gap_tree(gaps);
 	  L += w;
      }
+     *gap_ct = 0;
      return -1;
 }
