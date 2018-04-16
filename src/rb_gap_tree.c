@@ -306,27 +306,6 @@ void free_rb_gap_tree(rb_gap_tree_t *T)
 /* } */
 
 
-/* void _rb_get_iter(rb_gap_tree_t *T, rb_gap_tree_iterator_t *iter, size_t *i) */
-/* { */
-/*      if (T) */
-/*      { */
-/* 	  _rb_get_iter(T->left, iter, i); */
-/* 	  iter->nodes[*i] = T; */
-/* 	  *i++; */
-/* 	  _rb_get_iter(T->right, iter, i); */
-/*      } */
-/* } */
-
-/* rb_gap_tree_iterator_t rb_get_iter(rb_gap_tree_t *T) */
-/* { */
-/*      rb_gap_tree_iterator_t iter; */
-/*      iter.size = rb_size(T); */
-/*      iter.nodes = malloc(sizeof(rb_gap_tree_t *) * iter.size); */
-/*      size_t i = 0; */
-/*      _rb_get_iter(T, &iter, &i); */
-/*      return iter; */
-/* } */
-
 size_t _sprintf_rb_gap_tree(char *buf, rb_gap_tree_t *T, rb_gap_node_t *X)
 {
      char *beg = buf;
