@@ -4,8 +4,8 @@
 #include "task.h"
 #include "rb_gap_tree.h"
 
-rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j);
-rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c);
-rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows);
+rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, size_t *comp_steps);
+rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c, size_t *comp_steps);
+rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_steps);
 
 #endif

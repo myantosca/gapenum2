@@ -43,12 +43,12 @@ typedef struct rb_gap_tree
 
 rb_gap_tree_t *alloc_rb_gap_tree();
 
-rb_gap_node_t *tree_minimum(rb_gap_tree_t *T, rb_gap_node_t *X);
-rb_gap_node_t *tree_successor(rb_gap_tree_t *T, rb_gap_node_t *X);
+rb_gap_node_t *tree_minimum(rb_gap_tree_t *T, rb_gap_node_t *X, size_t *comp_steps);
+rb_gap_node_t *tree_successor(rb_gap_tree_t *T, rb_gap_node_t *X, size_t *comp_steps);
 void rb_left_rotate(rb_gap_tree_t *T, rb_gap_node_t *X);
 void rb_right_rotate(rb_gap_tree_t *T, rb_gap_node_t *Y);
-void rb_insert(rb_gap_tree_t *T, rb_gap_t g);
-rb_gap_node_t *rb_delete(rb_gap_tree_t *T, rb_gap_node_t *Z);
+void rb_insert(rb_gap_tree_t *T, rb_gap_t g, size_t *comp_steps);
+rb_gap_node_t *rb_delete(rb_gap_tree_t *T, rb_gap_node_t *Z, size_t *comp_steps);
 /* size_t rb_size(rb_gap_tree_t *T); */
 /* rb_gap_tree_iterator_t rb_get_iter(rb_gap_tree_t *T); */
 void free_rb_gap_tree(rb_gap_tree_t *T);

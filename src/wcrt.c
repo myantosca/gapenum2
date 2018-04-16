@@ -16,9 +16,10 @@ int main(int argc, char *argv[])
      int j;
      for (j = n-1; j >= 0; j--)
      {
-	  rt_j = gap_enum(tasks, n, j, 1);
-	  printf("RT(τ[%d] = {r=%ld,c=%ld,p=%ld}) = %ld\n",
-		 j, tasks[j].r, tasks[j].c, tasks[j].p, rt_j);
+	  size_t comp_steps = 0;
+	  rt_j = gap_enum(tasks, n, j, 1, &comp_steps);
+	  printf("RT(τ[%d] = {r=%ld,c=%ld,p=%ld}) = %ld [%lu]\n",
+		 j, tasks[j].r, tasks[j].c, tasks[j].p, rt_j, comp_steps);
 	  if (rt_j < 0) break;
      }
      return (rt_j < 0);

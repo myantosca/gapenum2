@@ -16,20 +16,25 @@ rb_gap_tree_t *alloc_rb_gap_tree()
 }
 
 
-rb_gap_node_t *tree_minimum(rb_gap_tree_t *T, rb_gap_node_t *X)
+rb_gap_node_t *tree_minimum(rb_gap_tree_t *T, rb_gap_node_t *X, size_t *comp_steps)
 {
      if (!T || !X) return NULL;
-     while (X->left != T->nil) X = X->left;
+     while (X->left != T->nil)
+     {
+	  (*comp_steps)++;
+	  X = X->left;
+     }
      return X;
 }
 
-rb_gap_node_t *tree_successor(rb_gap_tree_t *T, rb_gap_node_t *X)
+rb_gap_node_t *tree_successor(rb_gap_tree_t *T, rb_gap_node_t *X, size_t *comp_steps)
 {
      if (!T || !X) return NULL;
-     if (X->right != T->nil) return tree_minimum(T, X->right);
+     if (X->right != T->nil) return tree_minimum(T, X->right, comp_steps);
      rb_gap_node_t *Y = X->parent;
      while ((Y != T->nil) && (X == Y->right))
      {
+	  (*comp_steps)++;
 	  X = Y;
 	  Y = Y->parent;
      }
@@ -82,7 +87,7 @@ void rb_right_rotate(rb_gap_tree_t *T, rb_gap_node_t *Y)
      Y->parent = X;
 }
 
-void rb_insert(rb_gap_tree_t *T, rb_gap_t g)
+void rb_insert(rb_gap_tree_t *T, rb_gap_t g, size_t *comp_steps)
 {
      // Binary tree insertion
      rb_gap_node_t *Y = T->nil;
@@ -94,6 +99,7 @@ void rb_insert(rb_gap_tree_t *T, rb_gap_t g)
 
      while (X != T->nil)
      {
+	  (*comp_steps)++;
 	  Y = X;
 	  X = (Z->gap.entry < X->gap.entry) ? X->left : X->right;
      }
@@ -116,6 +122,7 @@ void rb_insert(rb_gap_tree_t *T, rb_gap_t g)
      Z->color = RED;
      while ((Z != T->root) && (Z->parent->color == RED))
      {
+	  (*comp_steps)++;
 	  if (Z->parent == Z->parent->parent->left)
 	  {
 	       Y = Z->parent->parent->right;
@@ -164,10 +171,11 @@ void rb_insert(rb_gap_tree_t *T, rb_gap_t g)
      T->root->color = BLACK;
 }
 
-void rb_delete_fixup(rb_gap_tree_t *T, rb_gap_node_t *X)
+void rb_delete_fixup(rb_gap_tree_t *T, rb_gap_node_t *X, size_t *comp_steps)
 {
      while ((X != T->root) && (X->color == BLACK))
      {
+	  (*comp_steps)++;
 	  rb_gap_node_t *W = T->nil;
 	  if (X == X->parent->left)
 	  {
@@ -235,12 +243,12 @@ void rb_delete_fixup(rb_gap_tree_t *T, rb_gap_node_t *X)
      if (X) X->color = BLACK;
 }
 
-rb_gap_node_t *rb_delete(rb_gap_tree_t *T, rb_gap_node_t *Z)
+rb_gap_node_t *rb_delete(rb_gap_tree_t *T, rb_gap_node_t *Z, size_t *comp_steps)
 {
      if (!T || !Z) return NULL;
      rb_gap_node_t *Y = T->nil;
      rb_gap_node_t *X = T->nil;
-     Y = ((Z->left == T-> nil) || (Z->right == T->nil)) ? Z : tree_successor(T, Z);
+     Y = ((Z->left == T-> nil) || (Z->right == T->nil)) ? Z : tree_successor(T, Z, comp_steps);
      X = (Y->left != T->nil) ? Y->left : Y->right;
      X->parent = Y->parent;
      if (Y->parent == T->nil)
@@ -259,7 +267,7 @@ rb_gap_node_t *rb_delete(rb_gap_tree_t *T, rb_gap_node_t *Z)
      {
 	  Z->gap = Y->gap;
      }
-     if (Y->color == BLACK) rb_delete_fixup(T, X);
+     if (Y->color == BLACK) rb_delete_fixup(T, X, comp_steps);
      return Y;
 }
 
