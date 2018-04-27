@@ -18,8 +18,9 @@ test: ./rb_gap_tree_test
 	$(CXX) $(CXXFLAGS) $+ -o $@ -lm
 
 clean:
-	rm *.o
-	rm *~
-	rm ./wcrt
-	rm ./rb_gap_tree_test
-	rm ./gentasksets
+	@rm -f *.o
+	@rm -f *~
+	@rm -f ./src/*~
+	@rm -f ./wcrt
+	@rm -f ./rb_gap_tree_test
+	@rm -f ./gentasksets
