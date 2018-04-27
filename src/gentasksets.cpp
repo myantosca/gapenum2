@@ -12,15 +12,15 @@ int main(int argc, char *argv[])
 
      while (a < argc)
      {
-	  if (!strcmp(argv[a], "-n"))
+	  if (!strcmp(argv[a], "-m"))
 	  {
 	       // Number of task sets
-	       if (argc > ++a) n = std::atoi(argv[a]);
+	       if (argc > ++a) m = std::atoi(argv[a]);
 	  }
-	  else if (!strcmp(argv[a], "-m"))
+	  else if (!strcmp(argv[a], "-n"))
 	  {
 	       // Task set size
-	       if (argc > ++a) m = std::atoi(argv[a]);
+	       if (argc > ++a) n = std::atoi(argv[a]);
 	  }
 	  else
 	  {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
      if ((n <= 0) || (m <= 0))
      {
-	  std::cout << "Usage: gentasksets [-n <number of task sets>] [-m <task set size>]" << std::endl;
+	  std::cout << "Usage: gentasksets [-m <number of task sets>] [-n <task set size>]" << std::endl;
 	  return -1;
      }
      // Uniform distribution of task computation times
@@ -43,11 +43,11 @@ int main(int argc, char *argv[])
      std::knuth_b p_prng(p_seed);
      std::uniform_int_distribution<int> p_distrib(40,59);
 
-     // For n task sets...
-     for (int i = 0; i < n; i++)
+     // For m task sets...
+     for (int i = 0; i < m; i++)
      {
-	  // For m tasks within a set...
-	  for (int j = 0; j < m; j++)
+	  // For n tasks within a set...
+	  for (int j = 0; j < n; j++)
 	  {
 	       // Print a line representing the task set "{r,c,p}", i.e., arrival, computation, period.
 	       int r = 0;
