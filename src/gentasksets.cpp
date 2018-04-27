@@ -3,6 +3,10 @@
 #include <iostream>
 #include <random>
 #include <chrono>
+#include <algorithm>
+#include <vector>
+
+#include "task.h"
 
 int main(int argc, char *argv[])
 {
@@ -46,16 +50,22 @@ int main(int argc, char *argv[])
      // For m task sets...
      for (int i = 0; i < m; i++)
      {
+	  std::vector<task_t> tasks;
 	  // For n tasks within a set...
 	  for (int j = 0; j < n; j++)
 	  {
-	       // Print a line representing the task set "{r,c,p}", i.e., arrival, computation, period.
-	       int r = 0;
-	       int c = c_distrib(c_prng);
-	       int p = p_distrib(p_prng);
-	       std::cout << '{' << r << ',' << c << ',' << p << '}' << std::endl;
+	       tasks.push_back({0, c_distrib(c_prng), p_distrib(p_prng)});
 	  }
-	  // Divide task sets by an empty line.
+	  std::sort(tasks.begin(), tasks.end(),
+		    [&](task_t a, task_t b){ return a.p == b.p ? a.c < b.c : a.p > b.p; });
+	  // Header indicating task set size.
+	  std::cout << n << ':';
+	  for (auto iter = tasks.begin(); iter < tasks.end(); iter++)
+	  {
+	       // Print a line representing the task set "{r,c,p}", i.e., arrival, computation, period.
+	       std::cout << '{' << iter->r << ',' << iter->c << ',' << iter->p << '}';
+	  }
+	  // One task set per line.
 	  std::cout << std::endl;
      }
      return 0;
