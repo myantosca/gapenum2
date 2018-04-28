@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
      int err = 0;
      size_t m = 1;
      int j;
-     printf("m,n,j,RT_j,gaps,steps,μs");
+     printf("version,m,n,j,RT_j,gaps,steps,μs");
      for (j = 1; j <= nmax; j++)
      {
 	  printf(",r%d,r%d,r%d", j, j, j);
