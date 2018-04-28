@@ -13,13 +13,13 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, s
      for (q = 1; q <= jobs; q++)
      {
 	  // Initialize the time counter to the current job's release time.
-	  rb_time_t t = tasks[j].r + (q-1) * tasks[j].p;
+	  task_time_t t = tasks[j].r + (q-1) * tasks[j].p;
 	  rb_gap_node_t *k_gap = tree_minimum(gaps, gaps->root, comp_steps);
 	  while (k_gap != gaps->nil)
 	  {
 	       (*comp_steps)++;
-	       rb_time_t t1 = k_gap->gap.entry;
-	       rb_time_t t2 = k_gap->gap.exit;
+	       task_time_t t1 = k_gap->gap.entry;
+	       task_time_t t2 = k_gap->gap.exit;
 	       rb_gap_node_t *free_gap = NULL;
 	       // No gap exists that can accommodate the current job. Bail.
 	       if (t1 > t + tasks[j].p) return NULL;
@@ -68,7 +68,7 @@ rb_gap_tree_t *gap_xfrm(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, s
      return gaps;
 }
 
-void _gap_srch(rb_gap_tree_t *T, rb_gap_node_t *X, rb_time_t c, rb_gap_t *gap, size_t *comp_steps)
+void _gap_srch(rb_gap_tree_t *T, rb_gap_node_t *X, task_time_t c, rb_gap_t *gap, size_t *comp_steps)
 {
      if (X != T->nil)
      {
@@ -90,18 +90,18 @@ void _gap_srch(rb_gap_tree_t *T, rb_gap_node_t *X, rb_time_t c, rb_gap_t *gap, s
      }
 }
 
-rb_gap_t gap_srch(rb_gap_tree_t *gaps, rb_time_t c, size_t *comp_steps)
+rb_gap_t gap_srch(rb_gap_tree_t *gaps, task_time_t c, size_t *comp_steps)
 {
      rb_gap_t gap = { -1, 0 };
      _gap_srch(gaps, gaps->root, c, &gap, comp_steps);
      return gap;
 }
 
-rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_steps, size_t *gap_ct)
+task_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_steps, size_t *gap_ct)
 {
-     rb_time_t w = (rb_time_t)ceil((double)tasks[j].p/(double)windows);
-     rb_time_t L = w;
-     rb_time_t U = tasks[j].p + w;
+     task_time_t w = (task_time_t)ceil((double)tasks[j].p/(double)windows);
+     task_time_t L = w;
+     task_time_t U = tasks[j].p + w;
      char buf[8192];
      while (L < U)
      {
@@ -123,7 +123,7 @@ rb_time_t gap_enum(task_t *tasks, size_t n, size_t j, int windows, size_t *comp_
 	       }
 	  }
 	  rb_gap_t gap = gap_srch(gaps, tasks[j].c, comp_steps);
-	  rb_time_t rt_j = -1;
+	  task_time_t rt_j = -1;
 	  if (gap.entry >= 0) rt_j = gap.entry + tasks[j].c;
 	  if (rt_j < tasks[j].p)
 	  {

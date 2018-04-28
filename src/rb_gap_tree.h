@@ -5,18 +5,20 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#include "task.h"
+
 typedef enum rb_color
 {
   BLACK = 0,
   RED = 1
 } rb_color_t;
 
-typedef int64_t rb_time_t;
+typedef int64_t task_time_t;
 
 typedef struct rb_gap
 {
-  rb_time_t entry;
-  rb_time_t exit;
+  task_time_t entry;
+  task_time_t exit;
 } rb_gap_t;
 
 typedef struct rb_gap_node

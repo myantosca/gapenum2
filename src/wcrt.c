@@ -6,9 +6,9 @@
 #include "gap_enum.h"
 #include "gap_enum2.h"
 
-rb_time_t exec_gap_enum(int version, task_t* tasks, size_t m, size_t n, int j)
+task_time_t exec_gap_enum(int version, task_t* tasks, size_t m, size_t n, int j)
 {
-     rb_time_t rt_j = -1;
+     task_time_t rt_j = -1;
      size_t comp_steps = 0;
      size_t gap_ct = 0;
      struct timespec t_0 = {0,0};
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	  }
 
 	  // Calculate WCRT based on gap enumeration algorithm variants.
-	  rb_time_t rt_j = -1;
+	  task_time_t rt_j = -1;
 	  for (j = n-1; j >= 0; j--)
 	  {
 	       // Original variant from Belwal and Cheng.
