@@ -8,7 +8,7 @@ rb_gap_tree_t *alloc_rb_gap_tree()
      rb_gap_tree_t *T = malloc(sizeof(rb_gap_tree_t));
      T->nil = malloc(sizeof(rb_gap_node_t));
      T->nil->color = BLACK;
-     T->nil->gap = (rb_gap_t){ -1, 0 };
+     T->nil->gap = (gap_t){ -1, 0 };
      T->nil->parent = T->nil;
      T->nil->left = T->nil;
      T->nil->right = T->nil;
@@ -87,7 +87,7 @@ void rb_right_rotate(rb_gap_tree_t *T, rb_gap_node_t *Y)
      Y->parent = X;
 }
 
-void rb_insert(rb_gap_tree_t *T, rb_gap_t g, size_t *comp_steps)
+void rb_insert(rb_gap_tree_t *T, gap_t g, size_t *comp_steps)
 {
      // Binary tree insertion
      rb_gap_node_t *Y = T->nil;

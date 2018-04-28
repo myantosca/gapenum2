@@ -13,4 +13,11 @@ typedef struct task
   task_time_t p; // task period
 } task_t;
 
+typedef struct gap
+{
+  task_time_t entry;
+  task_time_t exit;
+} gap_t;
+
+
 #endif
