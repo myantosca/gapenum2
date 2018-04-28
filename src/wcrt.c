@@ -36,13 +36,43 @@ rb_time_t exec_gap_enum(int version, task_t* tasks, size_t m, size_t n, int j)
 
 int main(int argc, char *argv[])
 {
+     size_t nmax = 7;
+     int a = 0;
+     while (a < argc)
+     {
+	  if (!strcmp(argv[a], "-nmax"))
+	  {
+	       // Maximum expected task set size
+	       if (argc > ++a) nmax = atoi(argv[a]);
+	  }
+	  else
+	  {
+	       a++;
+	  }
+     }
+
+     if (nmax <= 0)
+     {
+	  fprintf(stderr, "Usage: wcrt [-nmax <max expected task set size>]\n");
+	  return -1;
+     }
+
+
+     // CSV header
      int err = 0;
      size_t m = 1;
-     printf("m,n,j,RT_j,gaps,steps,μs,r1,c1,p1,r2,c2,p2,r3,c3,p3,r4,c4,p4,r5,c5,p5,r6,c6,p6,r7,c7,p7,r8,c8,p8\n");
+     int j;
+     printf("m,n,j,RT_j,gaps,steps,μs");
+     for (j = 0; j < nmax; j++)
+     {
+	  printf(",r%d,r%d,r%d", j, j, j);
+     }
+     printf("\n");
+
      while (!feof(stdin))
      {
+	  // Read next task set
 	  size_t n = 0;
-	  int j;
 	  scanf("%lu:", &n);
 	  task_t *tasks = malloc(n * sizeof(task_t));
 	  memset(tasks, 0, sizeof(task_t) * n);
@@ -51,13 +81,18 @@ int main(int argc, char *argv[])
 	       scanf("{%ld,%ld,%ld}", &(tasks[j].r), &(tasks[j].c), &(tasks[j].p));
 	  }
 
+	  // Calculate WCRT based on gap enumeration algorithm variants.
 	  rb_time_t rt_j = -1;
 	  for (j = n-1; j >= 0; j--)
 	  {
+	       // Original variant from Belwal and Cheng.
 	       rt_j = exec_gap_enum(1, tasks, m, n, j);
+	       // Optimized variant.
 	       rt_j = exec_gap_enum(2, tasks, m, n, j);
+	       // Exit the loop if point of unschedulability reached.
 	       if (rt_j < 0) break;
 	  }
+	  // Set error code based on whether any unschedulable task sets have been encountered.
 	  err |= (rt_j < 0);
 	  if (tasks) free(tasks);
 	  m++;
