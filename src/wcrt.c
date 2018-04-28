@@ -8,30 +8,30 @@
 
 rb_time_t exec_gap_enum(int version, task_t* tasks, size_t m, size_t n, int j)
 {
-  rb_time_t rt_j = -1;
-  size_t comp_steps = 0;
-  size_t gap_ct = 0;
-  struct timespec t_0 = {0,0};
-  struct timespec t_f = {0,0};
-  clock_gettime(CLOCK_MONOTONIC, &t_0);
-  if (version == 1)
-  {
-       rt_j = gap_enum(tasks, n, j, 1, &comp_steps, &gap_ct);
-  }
-  else if (version == 2)
-  {
-       rt_j = gap_enum2(tasks, n, j, 1, &comp_steps, &gap_ct);
-  }
-  clock_gettime(CLOCK_MONOTONIC, &t_f);
-  size_t t_exec = (t_f.tv_sec - t_0.tv_sec) * 1000000 + (size_t)((t_f.tv_nsec - t_0.tv_nsec) * .001);
-  printf("gap_enum%d,%lu,%lu,%d,%ld,%lu,%lu,%lu", version, m, n, j+1, rt_j, gap_ct, comp_steps, t_exec);
-  int jj;
-  for (jj = 0; jj < n; jj++)
-    {
-      printf(",%ld,%ld,%ld", tasks[jj].r, tasks[jj].c, tasks[jj].p);
-    }
-  printf("\n");
-  return rt_j;
+     rb_time_t rt_j = -1;
+     size_t comp_steps = 0;
+     size_t gap_ct = 0;
+     struct timespec t_0 = {0,0};
+     struct timespec t_f = {0,0};
+     clock_gettime(CLOCK_MONOTONIC, &t_0);
+     if (version == 1)
+     {
+	  rt_j = gap_enum(tasks, n, j, 1, &comp_steps, &gap_ct);
+     }
+     else if (version == 2)
+     {
+	  rt_j = gap_enum2(tasks, n, j, 1, &comp_steps, &gap_ct);
+     }
+     clock_gettime(CLOCK_MONOTONIC, &t_f);
+     size_t t_exec = (t_f.tv_sec - t_0.tv_sec) * 1000000 + (size_t)((t_f.tv_nsec - t_0.tv_nsec) * .001);
+     printf("gap_enum%d,%lu,%lu,%d,%ld,%lu,%lu,%lu", version, m, n, j+1, rt_j, gap_ct, comp_steps, t_exec);
+     int jj;
+     for (jj = 0; jj < n; jj++)
+     {
+	  printf(",%ld,%ld,%ld", tasks[jj].r, tasks[jj].c, tasks[jj].p);
+     }
+     printf("\n");
+     return rt_j;
 }
 
 int main(int argc, char *argv[])
