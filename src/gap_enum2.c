@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "rb_gap_tree.h"
-#include "gap_enum.h"
+#include "gap_enum2.h"
 
 rb_gap_tree_t *gap_xfrm2(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, size_t *comp_steps)
 {
