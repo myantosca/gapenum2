@@ -1,5 +1,5 @@
-#ifndef __GAP_ENUM_H
-#define __GAP_ENUM_H
+#ifndef __GAP_ENUM2_H
+#define __GAP_ENUM2_H
 
 #include "task.h"
 #include "rb_gap_tree.h"
