@@ -34,7 +34,7 @@ rb_gap_tree_t *gap_xfrm2(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, 
 		    // Job fits with slack at the start.
 		    if (t + tasks[j].c == t2)
 		    {
-			 rb_insert(gaps, (rb_gap_t){ t1, t }, comp_steps);
+			 if (t > t1) rb_insert(gaps, (rb_gap_t){ t1, t }, comp_steps);
 			 // Clean up the memory occupied by the spliced node.
 			 if (free_gap) free(free_gap);
 			 free_gap = NULL;
@@ -43,7 +43,7 @@ rb_gap_tree_t *gap_xfrm2(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, 
 		    // Job fits with slack on either side.
 		    if (t + tasks[j].c < t2)
 		    {
-			 rb_insert(gaps, (rb_gap_t){t1, t}, comp_steps);
+			 if (t > t1) rb_insert(gaps, (rb_gap_t){t1, t}, comp_steps);
 			 rb_insert(gaps, (rb_gap_t){t + tasks[j].c, t2}, comp_steps);
 			 // Clean up the memory occupied by the spliced node.
 			 if (free_gap) free(free_gap);
@@ -53,7 +53,7 @@ rb_gap_tree_t *gap_xfrm2(rb_gap_t W, rb_gap_tree_t *gaps, task_t *tasks, int j, 
 		    // Job does not fit. Model the abort.
 		    if (t + tasks[j].c > t2)
 		    {
-			 rb_insert(gaps, (rb_gap_t){t1, t}, comp_steps);
+			 if (t > t1) rb_insert(gaps, (rb_gap_t){t1, t}, comp_steps);
 		    }
 	       }
 
