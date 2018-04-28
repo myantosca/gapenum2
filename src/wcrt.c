@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	       if (rt_j < 0) break;
 	  }
 	  err |= (rt_j < 0);
-	  //if (tasks) free(tasks);
+	  if (tasks) free(tasks);
 	  m++;
      }
      return err;
