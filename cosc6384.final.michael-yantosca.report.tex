@@ -48,6 +48,14 @@
 %\algblock{NewIf}{NewElse}{NewEndIf}
 %\algloopdefx{NewState}[1]{\textcolor{red}{ #1 }}
 
+\pgfplotstableread{./results/taskset-n3-m500-optimization1-1gap.csv}\tasksAa
+\pgfplotstableread{./results/taskset-n5-m500-optimization1-1gap.csv}\tasksBa
+\pgfplotstableread{./results/taskset-n7-m500-optimization1-1gap.csv}\tasksCa
+\pgfplotstableread{./results/taskset-n3-m500-optimization2-1gap.csv}\tasksAb
+\pgfplotstableread{./results/taskset-n5-m500-optimization2-1gap.csv}\tasksBb
+\pgfplotstableread{./results/taskset-n7-m500-optimization2-1gap.csv}\tasksCb
+
+
 \begin{document}
 
 \tableofcontents
@@ -71,14 +79,14 @@
 
 \begin{section}{Methodology}
   \begin{subsection}{Implementing the Original Algorithm}
-    \begin{algorithm}
+    \begin{algorithm}[H]
       \caption{Gap-Enumeration Algorithm}\label{gapenum1}
       \begin{algorithmic}[1]
         \Function{Gap-Enumerate-Dynamic}{$\Gamma_{n}$, $\tau_{j}$, $w$}
           \State $L \gets \lceil\frac{P_{j}}{w}\rceil$
           \State $U \gets P_{j} + \lceil\frac{P_{j}}{w}\rceil$
           \While{$L < U$}
-            \State $\sigma_{n}(P_{0}^{L}) \gets {[0,L)}$
+            \State $\sigma_{n}(P|_{0}^{L}) \gets \{[0,L)\}$
             \For{$i \gets n-1,j$}
               \State $\sigma_{i-1}(P|_{0}^{L}) \gets \Call{Gap-Transform}{L, \sigma_{i}(P|_{0}^{L}), \Gamma_{n}, j}$
               \If{$\sigma_{i-1}(P|_{0}^{L}) = \emptyset$}
@@ -99,7 +107,7 @@
       \end{algorithmic}
     \end{algorithm}
 
-    \begin{algorithm}
+    \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm}\label{gapxfrm1}
       \begin{algorithmic}[2]
         \Function{Gap-Transform}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
@@ -145,7 +153,7 @@
 
   \begin{subsection}{Optimization 1}
 
-    \begin{algorithm}
+    \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm Optimization 1: No Zero Gaps Reinserted}\label{gapxfrm2}
       \begin{algorithmic}[2]
         \Function{Gap-Transform-Positive}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
@@ -193,7 +201,7 @@
 
   \begin{subsection}{Optimization 2}
     Converting to linked-list for O(1) insertion/deletion
-    \begin{algorithm}
+    \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm Optimization 2: No Zero Gaps Reinserted, Linked List}\label{gapxfrm2}
       \begin{algorithmic}[2]
         \Function{Gap-Transform-Positive-List}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
