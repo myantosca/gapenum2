@@ -1,4 +1,4 @@
-version,m,n,j,RT_j,gaps,steps,μs,r1,r1,r1,r2,r2,r2,r3,r3,r3
+version,m,n,j,RT_j,gaps,steps,μs,r1,c1,j1,r2,c2,j2,r3,c3,j3
 gap_enum1,1,3,3,5,1,1,25,0,9,54,0,8,50,0,5,46
 gap_enum2,1,3,3,5,1,1,4,0,9,54,0,8,50,0,5,46
 gap_enum1,1,3,2,13,2,10,4,0,9,54,0,8,50,0,5,46
