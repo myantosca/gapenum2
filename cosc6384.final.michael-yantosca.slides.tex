@@ -2,14 +2,18 @@
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{alltt}
-\usetheme{Warsaw}
+\usetheme{CambridgeUS}
 \author{Michael Yantosca}
 \institute{University of Houston}
 \date{April 28, 2018}
-\title[Closing the Gap]{Optimizing the Gap-Enumeration Algorithm}
+\title{Closing the Gap}
+\subtitle{Optimizing the Gap-Enumeration Algorithm}
 \usepackage[utf8]{luainputenc}
 \usepackage[bibencoding=utf8,backend=biber]{biblatex}
 \addbibresource{cosc6384.final.michael-yantosca.slides.bib}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multicol}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \usepgfplotslibrary{external}
@@ -31,19 +35,405 @@
   end table=\end{longtable},
   every head row/.append style={after row=\endhead}
 }
-%\pgfplotstableread{$filename}}\$variable
+
+\pgfplotstableread{./results/taskset-n3-m500-optimization1-1gap.csv}\tasksAa
+\pgfplotstableread{./results/taskset-n5-m500-optimization1-1gap.csv}\tasksBa
+\pgfplotstableread{./results/taskset-n7-m500-optimization1-1gap.csv}\tasksCa
+\pgfplotstableread{./results/taskset-n3-m500-optimization2-1gap.csv}\tasksAb
+\pgfplotstableread{./results/taskset-n5-m500-optimization2-1gap.csv}\tasksBb
+\pgfplotstableread{./results/taskset-n7-m500-optimization2-1gap.csv}\tasksCb
+
+\algloopdefx{ExitWhile}[0]{\textbf{exit while}}
+\algloopdefx{NewIf}[1]{\textcolor{red}{\textbf{if} #1 \textbf{then}}}
+\algloopdefx{NewEndIf}[0]{\textcolor{red}{\textbf{end if}}}
+\algloopdefx{NewElse}[0]{\textcolor{red}{\textbf{else}}}
+\algblock{NewIf}{NewEndIf}
 
 \begin{document}
 \begin{frame}
   \titlepage
 \end{frame}
-\begin{frame}{Original Implementation}
+\begin{section}{P-FRP}
+\begin{frame}{Priority-Based Functional Reactive Programming (P-FRP)}
+  \begin{itemize}
+  \item{
+    Pros
+    \begin{itemize}
+    \item{atomicity by function call}
+    \item{stronger invariants}
+    \item{
+      easier application development
+      \begin{itemize}
+      \item{
+        ``Beautiful Concurrency'' (https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/beautiful.pdf)
+      }
+      \end{itemize}
+    }
+    \item{functional programming often feeds new features into other programming paradigms}
+    \end{itemize}
+  }
+  \item{
+    Cons
+    \begin{itemize}
+    \item{wasted computation time (abort)}
+    \item{difficult to analyze response time}
+    \item{
+      harder system implementation
+      \begin{itemize}
+        \item{``TQueue can lead to thread starvation'' (https://ghc.haskell.org/trac/ghc/ticket/9539 - opened 4 years ago and still unresolved!)}
+      \end{itemize}
+    }
+    \item{largely unproven in RTS}
+    \end{itemize}
+  }
+  \end{itemize}
+\end{frame}
+\begin{frame}{Worst-Case Response Time (WCRT) Analysis}
+  \begin{itemize}
+  \item{
+    Time-Accurate Simulation (TAS)
+    \begin{itemize}
+    \item{straightforward}
+    \item{costly in time and space}
+    \end{itemize}
+  }
+  \item{
+    Gap-Enumeration Algorithm
+    \begin{itemize}
+    \item{based on red-black trees\autocite[263-280]{CLR}}
+    \item{lower cost than TAS\autocite[14-16]{BelwalCheng}}
+    \end{itemize}
+  }
+  \end{itemize}
+\end{frame}
+\end{section}
+\begin{section}{Gap-Enumeration 1.0}
+\begin{frame}{Gap-Enumeration Algorithm\autocite[11]{BelwalCheng}}
+  \begin{algorithm}[H]
+    {\tiny
+      \begin{algorithmic}[1]
+        \Function{Gap-Enumerate-Dynamic}{$\Gamma_{n}$, $\tau_{j}$, $w$}
+          \State{$L \gets \lceil\frac{P_{j}}{w}\rceil$}
+          \State{$U \gets P_{j} + \lceil\frac{P_{j}}{w}\rceil$}
+          \While{$L < U$}
+            \State{$\sigma_{n}(P|_{0}^{L}) \gets \{[0,L)\}$}
+            \For{$i \gets n-1,j$}
+              \State {$\sigma_{i-1}(P|_{0}^{L}) \gets \Call{Gap-Transform}{L, \sigma_{i}(P|_{0}^{L}), \Gamma_{n}, j}$}
+              \If{$\sigma_{i-1}(P|_{0}^{L}) = \emptyset$}
+                \State{\Return -1}
+              \EndIf
+            \EndFor
+            \State{$[t_{1},t_{2}) \gets \Call{Gap-Search}{\sigma_{j}(P|_{0}^{L}), C_{j}}$}
+            \If{$t_{1} \geq 0$}
+              \State{$RT_{j} \gets t_{1} + C_{j}$}
+            \EndIf
+            \If{$RT_{j} < P_{j}$}
+              \State{\Return $RT_{j}$}
+            \EndIf
+            \State{$L \gets L + \lceil\frac{P_{j}}{w}\rceil$}
+          \EndWhile
+        \State{\Return -1}
+      \EndFunction
+      \end{algorithmic}
+    }
+  \end{algorithm}
+\end{frame}
+\begin{frame}{Gap-Transformation Function\autocite[12]{BelwalCheng}}
+  \begin{algorithm}[H]
+  \begin{multicols}{2}
+    {\tiny
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \State \Call{Gap-Delete}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}
+                \If{$t + C_{j} = t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t + C_{j},t_{2})$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} > t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                \EndIf
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+    }
+  \end{multicols}
+  \end{algorithm}
+\end{frame}
+\begin{frame}{Gap-Search Algorithm\autocite[12-13]{BelwalCheng}}
+  \begin{itemize}
+  \item{Effectively \textsc{InOrder-Tree-Walk\autocite[245-246]{CLR}}}
+  \item{O($n$)}
+  \item{Halts when gap is found that can fit the computational cost or gaps are exhausted}
+  \end{itemize}
+\end{frame}
+\end{section}
+\begin{section}{Gap-Enumeration 2.x}
+\begin{frame}{Room for Improvement}
+  \begin{itemize}
+  \item{
+    Efficiency suggestions from the work\autocite[17]{BelwalCheng}
+    \begin{itemize}
+    \item{hash table to index location of $k$-gaps}
+    \item{2-D array to keep track of gaps created per task}
+    \end{itemize}
+  }
+  \item{
+    Algorithmic improvements
+    \begin{itemize}
+    \item{stop reinserting gaps of the form $[t,t)$}
+    \item{gap re-write}
+    \item{gap splice}
+    \end{itemize}
+  }
+  \end{itemize}
 \end{frame}
 \begin{frame}{Optimization 1}
+  \begin{algorithm}[H]
+    \begin{multicols}{2}
+    {\tiny
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform-Positive}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{First-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \State \Call{Gap-Delete}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}
+                \If{$t + C_{j} = t_{2}$}
+                  \NewIf{$t > t_{1}$}
+                    \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \NewEndIf
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                    \NewIf{$t > t_{1}$}
+                      \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                    \NewEndIf
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t + C_{j},t_{2})$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} > t_{2}$}
+                  \NewIf{$t > t_{1}$}
+                    \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \NewEndIf
+                \EndIf
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+    }
+    \end{multicols}
+  \end{algorithm}
 \end{frame}
+
+\begin{frame}{Original vs. Optimization 1}
+  \begin{tikzpicture}
+    \begin{groupplot}[
+        group style={
+          group size=3 by 1,
+          xlabels at=edge bottom,
+          ylabels at=edge left
+        },
+        width=1.5in,
+        height=1.5in,
+        xlabel=Task Set Number,
+        ylabel=Computational Steps,
+        legend style={legend columns=-1}
+      ]
+      \nextgroupplot[
+        title={Task Set Group A ($n = 3$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 1},
+        legend to name=version
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksAa};
+      \nextgroupplot[
+        title={Task Set Group B ($n = 5$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 1},
+        legend to name=version
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksBa};
+      \nextgroupplot[
+        title={Task Set Group C ($n = 7$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 1},
+        legend to name=version
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksCa};
+    \end{groupplot}
+    \node at (4,-1.5) {\pgfplotslegendfromname{version}};
+  \end{tikzpicture}
+\end{frame}
+
 \begin{frame}{Optimization 2}
+    \begin{algorithm}[H]
+    \begin{multicols}{2}
+      {\tiny
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform-Positive-List}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \If{$t + C_{j} \geq t_{2}$}
+                  \If{$t > t_{1}$}
+                    \State {$[t_{1},t_{2}) \gets [t_{1},t)$}
+                  \Else
+                    \State {\Call{Splice-Out}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}}
+                  \EndIf
+                  \If{$t + C_{j} = t_{2}$}
+                    \ExitWhile
+                  \EndIf
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                    \State {$[t_{1},t_{2}) \gets [t + C_{j},t_{2})$}
+                    \If{$t > t_{1}$}
+                      \State \Call{Splice-In}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                    \EndIf
+                  \ExitWhile
+                \EndIf
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Next}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+    }
+    \end{multicols}
+  \end{algorithm}
 \end{frame}
-\begin{frame}[allowframebreaks]{References}
+
+\begin{frame}{Original vs. Optimization 2}
+  \begin{tikzpicture}
+    \begin{groupplot}[
+        group style={
+          group size=3 by 1,
+          xlabels at=edge bottom,
+          ylabels at=edge left
+        },
+        width=1.5in,
+        height=1.5in,
+        xlabel=Task Set Number,
+        ylabel=Computational Steps,
+        legend style={legend columns=-1}
+      ]
+      \nextgroupplot[
+        title={Task Set Group A ($n = 3$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 2},
+        legend to name=version2
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksAb};
+      \nextgroupplot[
+        title={Task Set Group B ($n = 5$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 2},
+        legend to name=version2
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksBb};
+      \nextgroupplot[
+        title={Task Set Group C ($n = 7$)},
+        scatter, only marks, scatter src=explicit symbolic,
+        scatter/classes={
+          gapenum1={mark=o,blue},
+          gapenum2={mark=o,red}
+        },
+        legend entries={Original, Optimization 2},
+        legend to name=version2
+      ]
+      \addplot table [x=m,y=steps,meta=version] {\tasksCb};
+    \end{groupplot}
+    \node at (4,-1.5) {\pgfplotslegendfromname{version2}};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Conclusions and Future Work}
+  \begin{itemize}
+  \item{Space cost is time cost.}
+  \item{Stream processing techniques can reduce costs (minimize passes over data).}
+  \item{Pointers are real (helpful).}
+  \item{
+    The gap search function needs work.
+    \begin{itemize}
+      \item{It will probably require some sort of time tradeoff with space.}
+    \end{itemize}
+  }
+  \item{
+    More reuse of computational results would be nice.
+    \begin{itemize}
+      \item{e.g., reusing gap lists from previous iterations in next iteration}
+    \end{itemize}
+  }
+  \end{itemize}
+\end{frame}
+\end{section}
+\begin{section}{References}
+\begin{frame}{References}
   \printbibliography
 \end{frame}
+\end{section}
 \end{document}
