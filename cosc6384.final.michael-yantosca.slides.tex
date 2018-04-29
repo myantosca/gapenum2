@@ -1,0 +1,49 @@
+\documentclass{beamer}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{alltt}
+\usetheme{Warsaw}
+\author{Michael Yantosca}
+\institute{University of Houston}
+\date{April 28, 2018}
+\title[Closing the Gap]{Optimizing the Gap-Enumeration Algorithm}
+\usepackage[utf8]{luainputenc}
+\usepackage[bibencoding=utf8,backend=biber]{biblatex}
+\addbibresource{cosc6384.final.michael-yantosca.slides.bib}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepgfplotslibrary{external}
+\usepgfplotslibrary{statistics}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{external}
+\pgfplotsset{
+  tick label style={font=\tiny},
+%  label style={font=\tiny},
+  legend style={font=\tiny},
+  title style={font=\tiny},
+  xlabel style={font=\tiny},
+  ylabel style={font=\tiny}
+%  compat=newest
+}
+\pgfplotstableset{
+  col sep=comma,
+  begin table=\begin{longtable},
+  end table=\end{longtable},
+  every head row/.append style={after row=\endhead}
+}
+%\pgfplotstableread{$filename}}\$variable
+
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+\begin{frame}{Original Implementation}
+\end{frame}
+\begin{frame}{Optimization 1}
+\end{frame}
+\begin{frame}{Optimization 2}
+\end{frame}
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}
+\end{document}

@@ -1,0 +1,258 @@
+\documentclass{article}
+\usepackage[top=1in, bottom=1.25in, left=1in, right=1in]{geometry}
+\usepackage{fontspec}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{alltt}
+\usepackage[utf8]{luainputenc}
+\usepackage[bibencoding=utf8,backend=biber]{biblatex}
+\addbibresource{cosc6384.final.michael-yantosca.report.bib}
+\usepackage{minted}
+\usepackage{longtable}
+\usepackage{enumerate}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{pgfgantt}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepgfplotslibrary{external}
+\usepgfplotslibrary{statistics}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{pgfplots.groupplots}
+\pgfplotsset{
+  tick label style={font=\footnotesize},
+  label style={font=\small},
+  legend style={font=\small},
+  compat=newest
+}
+\pgfplotstableset{
+  col sep=comma,
+  begin table=\begin{longtable},
+  end table=\end{longtable},
+  every head row/.append style={after row=\endhead}
+}
+\usepgflibrary{arrows.meta}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Closing the Gap: Optimizing the Gap Enumeration Algorithm}
+\lhead{Michael Yantosca}
+\rfoot{\thepage}
+\newcommand{\todo}[0]{\textbf{\textcolor{red}{TODO}}}
+\algloopdefx{ExitWhile}[0]{\textbf{exit while}}
+\algloopdefx{NewIf}[1]{\textcolor{red}{\textbf{if} #1 \textbf{then}}}
+\algloopdefx{NewEndIf}[0]{\textcolor{red}{\textbf{end if}}}
+\algloopdefx{NewElse}[0]{\textcolor{red}{\textbf{else}}}
+\algblock{NewIf}{NewEndIf}
+%\algblock{NewIf}{NewElse}{NewEndIf}
+%\algloopdefx{NewState}[1]{\textcolor{red}{ #1 }}
+
+\begin{document}
+
+\tableofcontents
+
+\begin{section}{Abstract}
+  Functional Reactive Programming (FRP) offers an attractive alternative to traditional
+  real-time programming paradigms on account of its inherent atomicity by function call,
+  which can simplify the process of static analysis through stronger invariants.
+  However, these guarantees come at the price of a more complicated timing analysis
+  required by the Abort-And-Restart (ANR) scheduling method which Priority-Based FRP
+  (P-FRP) employs and which provides the underpinning for the aforementioned atomicity.
+  Earlier work by Chaitanya Belwal and Albert M. K. Cheng developed and explored the
+  gap-enumeration algorithm, a method for characterizing the worst case response time (WCRT)
+  of each task in a set of tasks under the ANR model that outperformed time-accurate simulation
+  in terms of efficiency. Here the work is revisited with the aim of further optimizing the
+  performance of the gap-enumeration algorithm
+\end{section}
+
+\begin{section}{Introduction}
+\end{section}
+
+\begin{section}{Methodology}
+  \begin{subsection}{Implementing the Original Algorithm}
+    \begin{algorithm}
+      \caption{Gap-Enumeration Algorithm}\label{gapenum1}
+      \begin{algorithmic}[1]
+        \Function{Gap-Enumerate-Dynamic}{$\Gamma_{n}$, $\tau_{j}$, $w$}
+          \State $L \gets \lceil\frac{P_{j}}{w}\rceil$
+          \State $U \gets P_{j} + \lceil\frac{P_{j}}{w}\rceil$
+          \While{$L < U$}
+            \State $\sigma_{n}(P_{0}^{L}) \gets {[0,L)}$
+            \For{$i \gets n-1,j$}
+              \State $\sigma_{i-1}(P|_{0}^{L}) \gets \Call{Gap-Transform}{L, \sigma_{i}(P|_{0}^{L}), \Gamma_{n}, j}$
+              \If{$\sigma_{i-1}(P|_{0}^{L}) = \emptyset$}
+                \State \Return -1
+              \EndIf
+            \EndFor
+            \State $[t_{1},t_{2}) \gets \Call{Gap-Search}{\sigma_{j}(P|_{0}^{L}), C_{j}}$
+            \If{$t_{1} \geq 0$}
+              \State $RT_{j} \gets t_{1} + C_{j}$
+            \EndIf
+            \If{$RT_{j} < P_{j}$}
+              \State \Return $RT_{j}$
+            \EndIf
+            \State $L \gets L + \lceil\frac{P_{j}}{w}\rceil$
+          \EndWhile
+        \State \Return -1
+      \EndFunction
+      \end{algorithmic}
+    \end{algorithm}
+
+    \begin{algorithm}
+      \caption{Gap-Tranformation Algorithm}\label{gapxfrm1}
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \State \Call{Gap-Delete}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}
+                \If{$t + C_{j} = t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t + C_{j},t_{2})$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} > t_{2}$}
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                \EndIf                  
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+      \end{algorithm}
+        
+  \end{subsection}
+
+  \begin{subsection}{Task Set Generation}
+  \end{subsection}
+
+  \begin{subsection}{Optimization 1}
+
+    \begin{algorithm}
+      \caption{Gap-Tranformation Algorithm Optimization 1: No Zero Gaps Reinserted}\label{gapxfrm2}
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform-Positive}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \State \Call{Gap-Delete}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}
+                \If{$t + C_{j} = t_{2}$}
+                  \NewIf{$t > t_{1}$}
+                    \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \NewEndIf
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                    \NewIf{$t > t_{1}$}
+                      \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                    \NewEndIf
+                  \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t + C_{j},t_{2})$}
+                  \ExitWhile
+                \EndIf
+                \If{$t + C_{j} > t_{2}$}
+                  \NewIf{$t > t_{1}$}
+                    \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                  \NewEndIf
+                \EndIf                  
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+      \end{algorithm}
+  \end{subsection}
+
+  \begin{subsection}{Optimization 2}
+    Converting to linked-list for O(1) insertion/deletion
+    \begin{algorithm}
+      \caption{Gap-Tranformation Algorithm Optimization 2: No Zero Gaps Reinserted, Linked List}\label{gapxfrm2}
+      \begin{algorithmic}[2]
+        \Function{Gap-Transform-Positive-List}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
+          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \For{$q \gets 1, J_{i}$}
+            \State $t \gets R_{j} + P_{j}(q-1)$
+            \State $[t_{1},t_{2}) \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$
+            \While{$[t_{1},t_{2}) \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$}
+              \If{$t_{1} > t + P_{j}$}
+                \State \Return $\emptyset$
+              \EndIf
+              \If{$t < t_{1}$}
+                \State $t \gets t_{1}$
+              \EndIf
+              \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \If{$t + C_{j} \geq t_{2}$}
+                  \If{$t > t_{1}$}
+                    \State {$[t_{1},t_{2}) \gets [t_{1},t)$}
+                  \Else
+                    \State {\Call{Splice-Out}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}}
+                  \EndIf
+                  \If{$t + C_{j} = t_{2}$}    
+                    \ExitWhile
+                  \EndIf
+                \EndIf
+                \If{$t + C_{j} < t_{2}$}
+                    \State {$[t_{1},t_{2}) \gets [t + C_{j},t_{2})$}
+                    \If{$t > t_{1}$}
+                      \State \Call{Splice-In}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
+                    \EndIf
+                  \ExitWhile
+                \EndIf
+              \EndIf
+              \State $[t_{1},t_{2}) \gets \Call{Next}{t_{1}}$
+            \EndWhile
+          \EndFor
+          \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
+          \State \Return $\sigma_{i-1}(P|_{0}^{L})$
+        \EndFunction
+      \end{algorithmic}
+      \end{algorithm}
+  \end{subsection}
+
+\end{section}
+
+\begin{section}{Results}
+\end{section}
+
+\begin{section}{Conclusions}
+\end{section}
+
+\begin{section}{Acknowledgments}
+  \begin{paragraph}{}
+    The author would like to thank Dr. Albert M. K. Cheng for his introduction to the original work by Chaitanya Belwal and himself.
+  \end{paragraph}
+\end{section}
+
+\printbibliography
+
+\begin{section}{Supplemental Material}
+\end{section}
+\end{document}
