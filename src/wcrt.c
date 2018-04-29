@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
      printf("version,m,n,j,RT_j,gaps,steps,μs");
      for (j = 1; j <= nmax; j++)
      {
-	  printf(",r%d,r%d,r%d", j, j, j);
+	  printf(",r%d,c%d,j%d", j, j, j);
      }
      printf("\n");
 
