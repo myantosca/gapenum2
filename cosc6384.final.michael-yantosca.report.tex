@@ -75,6 +75,49 @@
 \end{section}
 
 \begin{section}{Introduction}
+  \begin{paragraph}{}
+    The functional programming paradigm has a long history of feeding innovations in other
+    programming paradigms, often well ahead of adoption thereof in the latter. For example,
+    anonymous lambda closures and first-class function passing, which were not available
+    in the C++ language standard until version 11\autocite{CPPLambdas}, have been a staple of languages such
+    as LISP since at least the 1970s\autocite[2]{HistoryOfHaskell}. The use of recursion in functional programming languages
+    makes inductive proofs of program correctness much simpler than similar iterative
+    constructions in imperative languages, particularly in languages that allow
+    side-effects by default. It is easier to reason about idempotent functions than
+    procedures with the potential for side-channel input via shifting program state.
+  \end{paragraph}
+  \begin{paragraph}{}
+    It raises the question then as to why the field of real-time systems programming has
+    not more readily adopted the functional programming paradigm. The answer lies in
+    the division between application-level programming and systems-level programming.
+    While functional programming at the application level can fuel rapid application
+    development, implementing runtime systems that enable such programming is a difficult
+    and complicated task. The software transactional memory model described by
+    Simon Peyton Jones in his essay ``Beautiful Concurrency''\autocite{BeautifulConcurrency} can still fall
+    victim to thread starvation\autocite{TQueueBug}, and the stateless idempotency and atomicity
+    guarantees of function execution ultimately have to be implemented on stateful transistors.
+  \end{paragraph}
+  \begin{paragraph}{}
+    In an age of increasing systems complexity, it behooves practitioners of real-time systems
+    programming to investigate whether systems can be built to employ functional programming
+    techniques that might alleviate the complexity of the necessary systems analysis.
+    Some research has been done in this area, but one of the primary obstacles to analysis
+    is the required scheduling model. While much of real-time systems scheduling research
+    has focused on preemptive scheduling since Liu and Layland's seminal paper\autocite{LiuLayland1973},
+    the guarantees of functional execution atomicity in P-FRP scheduling requires abort-and-restart
+    scheduling\autocite[1]{BelwalCheng}.
+  \end{paragraph}
+  \begin{paragraph}{}
+    Characterizing the ANR model is expensive and difficult, as indicated by Belwal
+    and Cheng\autocite[2]{BelwalCheng}. However, if the characterization can be made less
+    expensive, this in turn can facilitate more research into the adoption of functional
+    programming techniques in real-time systems programming, which can provide a foundation
+    for building safer, more reliable systems in a more systematic manner. The following work
+    attempts to optimize the original work by Belwal and Cheng to provide an efficient
+    worst case response time determination for the lowest priority task in a P-FRP task set.
+    The terms and variables used follow the original work\autocite[3-4]{BelwalCheng} except that the
+    task period is denoted $P$ and in cases where terms and variables are otherwise explicitly specified.
+  \end{paragraph}
 \end{section}
 
 \begin{section}{Methodology}
