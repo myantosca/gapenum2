@@ -287,7 +287,35 @@
   \end{subsection}
 
   \begin{subsection}{Optimization 2}
-    Converting to linked-list for O(1) insertion/deletion
+    \begin{paragraph}{}
+      Further examination of the original algorithm led to the conclusion that the
+      algorithm was not making full utilization of the properties of the red-black tree
+      data structure.
+      Each iteration of the gap-transformation function had to find the minimum leaf
+      at the start, an $O(h)$ operation from the root of a tree of size $h$\autocite[246-249]{CLR}.
+      Given that the height of a red-black tree of size $n$ is a maximum of $O(log_{2}(n))$\autocite[263-265]{CLR},
+      the asymptotic cost is thus $O(log_{2}(n))$ just to start a transform iteration.
+    \end{paragraph}
+    \begin{paragraph}{}
+      The sequential walk over the $k$-gaps in the tree meant that every iteration also
+      incurred an $O(n)$ cost. Within each iteration was the potential for $O(log_{2}(n))$
+      insertion and deletion costs\autocite[268-277]{CLR}, as well as another possible
+      $O(log_{2}(n)$ operation to find the successor $k$-gap.
+    \end{paragraph}
+    \begin{paragraph}{}
+      In order to avoid these compounding costs, the next optimization preserved the
+      prohibition on reinsertion of null gaps and changed the underlying data structure
+      to a linked list. By doing this, the start of a transform iteration became a
+      constant-time operation since the list maintains a pointer to its own head.
+      To simplify operations, a nil sentinel was also maintained at the tail.
+      The transform iteration walk remained $O(n)$, but this was unavoidable since
+      the nature of the ANR scheduling model demanded that gaps be filled with
+      aborted jobs until the job reached completion or the gaps were exhausted.
+      The insertion and deletion operations became constant-time since the gaps
+      were simply spliced in and spliced out, respectively. In some cases, no pointer
+      adjustments were even required since the existing $k$-gap could simply be modified
+      \emph{in situ} with regard to its entry and exit.
+    \end{paragraph}
     \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm Optimization 2: No Zero Gaps Reinserted, Linked List}\label{gapxfrm2}
       \begin{algorithmic}[2]
