@@ -363,7 +363,30 @@
       \end{algorithmic}
       \end{algorithm}
   \end{subsection}
-
+  \begin{subsection}{Metrics}
+    \begin{paragraph}{}
+      As with the original work, determining the number of computational steps required for
+      each implementation was a desired metric. However, unlike the original work, which
+      added a blanket $O(log(n))$ cost to every red-black tree insertion and deletion\autocite[14]{BelwalCheng},
+      empirical computational steps were counted within the major loops and operations
+      inside the various functions.
+    \end{paragraph}
+    \begin{paragraph}{}
+      For the red-black tree versions, this included
+      \textsc{Gap-Enumerate-Dynamic}, \textsc{Gap-Transform} or \textsc{Gap-Transform-Positive},
+      and \textsc{Gap-Search}, as well as \textsc{RB-Insert}, \textsc{RB-Delete},
+      \textsc{Tree-Successor}, and \textsc{Tree-Minimum}. For the linked-list
+      version, this included \textsc{Gap-Enumerate-Dynamic}, \textsc{Gap-Transform-Positive-List},
+      and \textsc{Gap-Search}, as well as \textsc{Splice-In} and \textsc{Splice-Out}.
+      The \textsc{Head}, \textsc{Tail}, and \textsc{Next} functions were not included
+      since they represent simple pointer accesses.
+    \end{paragraph}
+    \begin{paragraph}{}
+      For each run of the gap-enumeration algorithm, the number of $k$-gaps present in
+      the final tree or list was also counted as a measure of space complexity.
+      Wall-clock execution time was measured with the POSIX system clock \texttt{CLOCK\_MONOTONIC}.
+    \end{paragraph}
+  \end{subsection}
 \end{section}
 
 \begin{section}{Results}
