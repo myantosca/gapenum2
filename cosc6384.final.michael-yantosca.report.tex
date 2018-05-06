@@ -219,7 +219,22 @@
   \end{subsection}
 
   \begin{subsection}{Optimization 1}
-
+    \begin{paragraph}{}
+      Having implemented the original algorithm, it became clear that the constant
+      deletion and reinsertion costs were a major component of the algorithm's
+      computational cost, validating conclusions drawn in the original work\autocite[17]{BelwalCheng}. However, rather than devising a space-costly indexing scheme to try and speed
+      up the tree modification operations, it was determined that a less expensive
+      adjustment might yield even better efficiency after observing that the original
+      algorithm reinserted a $k$-gap of size zero (0) back into the tree after a job
+      had been scheduled into a gap either for a completed or aborted execution.
+      Since these null gaps could never fit a task in following iterations of the
+      gap-transformation function, including them in the tree incurred extraneous costs.
+    \end{paragraph}
+    \begin{paragraph}{}
+      Consequently, modifications were made to perform a size check
+      on $k$-gaps prior to reinsertion to prevent null gaps from being introduced
+      as outlined in the following algorithm. The changes in the algorithm are
+      highlighted in red for legibility.
     \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm Optimization 1: No Zero Gaps Reinserted}\label{gapxfrm2}
       \begin{algorithmic}[2]
@@ -267,7 +282,8 @@
           \State \Return $\sigma_{i-1}(P|_{0}^{L})$
         \EndFunction
       \end{algorithmic}
-      \end{algorithm}
+    \end{algorithm}
+    \end{paragraph}
   \end{subsection}
 
   \begin{subsection}{Optimization 2}
