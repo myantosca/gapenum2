@@ -211,6 +211,11 @@
       since the reinserted node whose entry time is $t + C_{j}$ in the case where
       the $k$-gap is filled with slack at the end must not be skipped in the gap traversal.
     \end{paragraph}
+    \begin{paragraph}{}
+      As in the original work, the \textsc{Gap-Search}\autocite[12-13]{BelwalCheng} algorithm is simply a variation of \textsc{In-Order-Tree-Walk}\autocite[245-246]{CLR}
+      that returns either when a gap is found that fits the current task for which an execution gap is being sought
+      or when all gaps have been exhausted and no suitable gap has been found.
+    \end{paragraph}
   \end{subsection}
 
   \begin{subsection}{Task Set Generation}
