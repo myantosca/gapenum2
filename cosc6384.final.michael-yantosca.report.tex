@@ -114,8 +114,10 @@
           \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
           \For{$q \gets 1, J_{i}$}
             \State $t \gets R_{j} + P_{j}(q-1)$
-            \State $[t_{1},t_{2}) \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
-            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+            \State $kgap \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \State $t_{1} \gets \Call{Entry}{kgap}$
+            \State $t_{2} \gets \Call{Exit}{kgap}$
+            \While{$kgap \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
               \EndIf
@@ -135,9 +137,11 @@
                 \EndIf
                 \If{$t + C_{j} > t_{2}$}
                   \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
-                \EndIf                  
+                \EndIf
               \EndIf
-              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+              \If{$t1 = \Call{Entry}{kgap}$}
+                \State $kgap \gets \Call{Successor-Gap}{t_{1}}$
+              \EndIf
             \EndWhile
           \EndFor
           \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
@@ -160,8 +164,10 @@
           \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
           \For{$q \gets 1, J_{i}$}
             \State $t \gets R_{j} + P_{j}(q-1)$
-            \State $[t_{1},t_{2}) \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
-            \While{$[t_{1},t_{2}) \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
+            \State $kgap \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
+            \State $t_{1} \gets \Call{Entry}{kgap}$
+            \State $t_{2} \gets \Call{Exit}{kgap}$
+            \While{$kgap \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
               \EndIf
@@ -187,9 +193,11 @@
                   \NewIf{$t > t_{1}$}
                     \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
                   \NewEndIf
-                \EndIf                  
+                \EndIf
               \EndIf
-              \State $[t_{1},t_{2}) \gets \Call{Successor-Gap}{t_{1}}$
+              \If{$t1 = \Call{Entry}{kgap}$}
+                \State $kgap \gets \Call{Successor-Gap}{t_{1}}$
+              \EndIf
             \EndWhile
           \EndFor
           \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
@@ -208,8 +216,10 @@
           \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
           \For{$q \gets 1, J_{i}$}
             \State $t \gets R_{j} + P_{j}(q-1)$
-            \State $[t_{1},t_{2}) \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$
-            \While{$[t_{1},t_{2}) \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$}
+            \State $kgap \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$
+            \State $t_{1} \gets \Call{Entry}{kgap}$
+            \State $t_{2} \gets \Call{Exit}{kgap}$
+            \While{$kgap \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
               \EndIf
@@ -223,7 +233,7 @@
                   \Else
                     \State {\Call{Splice-Out}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}}
                   \EndIf
-                  \If{$t + C_{j} = t_{2}$}    
+                  \If{$t + C_{j} = t_{2}$}
                     \ExitWhile
                   \EndIf
                 \EndIf
@@ -235,7 +245,9 @@
                   \ExitWhile
                 \EndIf
               \EndIf
-              \State $[t_{1},t_{2}) \gets \Call{Next}{t_{1}}$
+              \If{$t1 = \Call{Entry}{kgap}$}
+                \State $kgap \gets \Call{Next}{t_{1}}$
+              \EndIf
             \EndWhile
           \EndFor
           \State $\sigma_{i-1}(P|_{0}^{L}) \gets \sigma_{i}(P|_{0}^{L})$
