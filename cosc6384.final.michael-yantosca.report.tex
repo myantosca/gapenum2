@@ -515,6 +515,66 @@
       step measurement is more informative from a hardware-agnostic, purely
       algorithmic standpoint.
     \end{paragraph}
+
+    % Computational Steps
+    \begin{paragraph}{}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=1-Gaps,
+          ylabel=Computational Steps,
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksAa};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksBa};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksCa};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version}};
+    \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      The results here clearly delineate the drop in space complexity induced
+      by not reinserting the null $k$-gaps and the subsequent drop in empirical
+      time complexity. The gap between the cost clusters increases proportional to the
+      task set size.
+    \end{paragraph}
   \end{subsection}
 
   \begin{subsection}{Original Method vs. Optimization 2}
@@ -643,6 +703,65 @@
       Further experiments could validate or falsify these hypotheses.
     \end{paragraph}
 
+
+    % 1-Gaps vs. Computational Steps
+    \begin{paragraph}{}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=1-Gaps,
+          ylabel=Computational Steps,
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksAb};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksBb};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=gaps,y=steps,meta=version] {\tasksCb};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version2}};
+    \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      The results here reproduce the effect seen from the first optimization
+      with regard to space and time complexity. The improvement over the first
+      optimization is clearly visible in the task sets from group $C$.
+    \end{paragraph}
   \end{subsection}
 \end{section}
 
