@@ -392,6 +392,8 @@
 \begin{section}{Results}
 
   \begin{subsection}{Original Method vs. Optimization 1}
+    % Computational Steps
+    \begin{paragraph}{}
     \begin{tikzpicture}
       \begin{groupplot}[
           group style={
@@ -441,9 +443,85 @@
       \end{groupplot}
       \node at (4,-1.5) {\pgfplotslegendfromname{version}};
     \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      As expected, the prohibition on null $k$-gaps in the gap tree significantly
+      reduced the number of computational steps required for gap enumeration.
+      The range of computational steps required for Optimization 1 has a fair
+      amount of jitter, probably owing to the nature of the exact tree structure
+      as informed by the task set definition and the interplay between the various
+      tasks in the ANR scheduling model. The variance is most likely a function
+      of the red-black tree insertion and deletion operations.
+    \end{paragraph}
+
+    % Execution Time
+    \begin{paragraph}{}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=Task Set Number,
+          ylabel=Execution Time ({\mu}s),
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksAa};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksBa};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksCa};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version}};
+    \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      The results exhibit a decent speedup in wall-clock execution time.
+      However, these results must be considered in the context of
+      the testing platform as the exact execution time speedup will
+      depend on the hardware and operating system being used. The computational
+      step measurement is more informative from a hardware-agnostic, purely
+      algorithmic standpoint.
+    \end{paragraph}
   \end{subsection}
 
   \begin{subsection}{Original Method vs. Optimization 2}
+
+    % Computational Steps
+    \begin{paragraph}{}
     \begin{tikzpicture}
       \begin{groupplot}[
           group style={
@@ -493,6 +571,79 @@
       \end{groupplot}
       \node at (4,-1.5) {\pgfplotslegendfromname{version2}};
     \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      As expected, the linked-list implementation significantly
+      reduced the number of computational steps required for gap enumeration.
+      The range of computational steps required for Optimization 2 has less
+      jitter than Optimization 2 since the insertion and deletion costs were
+      constant. Considering the previous graphs, Optimization 2 slightly
+      outperforms Optimization 1 in general.
+    \end{paragraph}
+
+    % Execution Time
+    \begin{paragraph}{}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=Task Set Number,
+          ylabel=Execution Time ({\mu}s),
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksAb};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksBb};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=μs,meta=version] {\tasksCb};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version2}};
+    \end{tikzpicture}
+    \end{paragraph}
+
+    \begin{paragraph}{}
+      The results for Optimization 2 exhibit a decent speedup in wall-clock execution time.
+      There seems to be an anomaly with regard to the execution time of task
+      sets listed earlier in the population. The exponential decay as population identifier
+      increases likely stems either from whole program initialization costs or from
+      interference due to external, transient load on the platform under test.
+      Further experiments could validate or falsify these hypotheses.
+    \end{paragraph}
+
   \end{subsection}
 \end{section}
 
