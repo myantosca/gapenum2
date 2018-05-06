@@ -304,6 +304,110 @@
 \end{section}
 
 \begin{section}{Results}
+
+  \begin{subsection}{Original Method vs. Optimization 1}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=Task Set Number,
+          ylabel=Computational Steps,
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksAa};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksBa};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 1},
+          legend to name=version
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksCa};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version}};
+    \end{tikzpicture}
+  \end{subsection}
+
+  \begin{subsection}{Original Method vs. Optimization 2}
+    \begin{tikzpicture}
+      \begin{groupplot}[
+          group style={
+            group size=3 by 1,
+            xlabels at=edge bottom,
+            ylabels at=edge left
+          },
+          width=2in,
+          height=2in,
+          xlabel=Task Set Number,
+          ylabel=Computational Steps,
+          legend style={legend columns=-1}
+        ]
+        \nextgroupplot[
+          title={Task Set Group A ($n = 3$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksAb};
+        \nextgroupplot[
+          title={Task Set Group B ($n = 5$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksBb};
+        \nextgroupplot[
+          title={Task Set Group C ($n = 7$)},
+          scatter, only marks, scatter src=explicit symbolic,
+          scatter/classes={
+            gapenum1={mark=o,blue},
+            gapenum2={mark=o,red}
+          },
+          legend entries={Original, Optimization 2},
+          legend to name=version2
+        ]
+        \addplot table [x=m,y=steps,meta=version] {\tasksCb};
+      \end{groupplot}
+      \node at (4,-1.5) {\pgfplotslegendfromname{version2}};
+    \end{tikzpicture}
+  \end{subsection}
 \end{section}
 
 \begin{section}{Conclusions}
