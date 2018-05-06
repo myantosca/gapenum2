@@ -79,6 +79,10 @@
 
 \begin{section}{Methodology}
   \begin{subsection}{Implementing the Original Algorithm}
+    \begin{paragraph}{}
+      The original gap-enumeration algorithm is given below with some slight modifications
+      for clarity.
+
     \begin{algorithm}[H]
       \caption{Gap-Enumeration Algorithm\autocite[11]{BelwalCheng}}\label{gapenum1}
       \begin{algorithmic}[1]
@@ -106,6 +110,15 @@
       \EndFunction
       \end{algorithmic}
     \end{algorithm}
+
+    The original work set the post-search $t_{1}$ validity test as $t_{1} > 0$, but
+    this precludes scheduling work at $t = 0$, so the test $t_{1} \geq 0$
+    was substituted.
+    \end{paragraph}
+
+    \begin{paragraph}
+      The original gap-transformation algorithm is given below with some slight
+      modifications for clarity as necessitated by implementation details.
 
     \begin{algorithm}[H]
       \caption{Gap-Tranformation Algorithm\autocite[12]{BelwalCheng}}\label{gapxfrm1}
@@ -148,8 +161,14 @@
           \State \Return $\sigma_{i-1}(P|_{0}^{L})$
         \EndFunction
       \end{algorithmic}
-      \end{algorithm}
-        
+    \end{algorithm}
+    \end{paragraph}
+    \begin{paragraph}{}
+      Note that the test before performing an advance along the tree is required
+      since in the case where the $k$-gap is filled with slack at the end, the
+      reinserted node whose entry time is $t + C_{j}$ must not be skipped in the
+      gap traversal.
+    \end{paragraph}
   \end{subsection}
 
   \begin{subsection}{Task Set Generation}
