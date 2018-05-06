@@ -648,6 +648,41 @@
 \end{section}
 
 \begin{section}{Conclusions}
+  \begin{paragraph}{}
+    Avenues for future work include more comprehensive tests with different types of task
+    sets. Although Belwal and Cheng illustrated the ANR scheduling model and the gap
+    enumeration algorithm succinctly with a task set whose task periods varied greatly
+    within the set, the experiments run both in the original work and the present work
+    covered fairly homogeneous task sets by contrast. The homogeneity of the task sets
+    tested does not fully explore the pathology of the worst case scenario for the
+    algorithm and the underlying data structures, which reach their nadir in task sets
+    where the higher priority tasks are frequently released within the search hyperperiod,
+    thereby creating many disjoint $k$-gaps which must be walked by lower priority tasks
+    in search of an execution space.
+  \end{paragraph}
+  \begin{paragraph}{}
+    No effort was made in this work to improve the gap-search algorithm, which remains
+    an $O(n)$ operation. Future work could focus on some form of efficient meta-indexing
+    to reduce the search time. Ideally, this would be built during the gap-transformation
+    function to amortize the time costs required for such indexing.
+    Alternatively, investigations into a more flexible data structure that could encode
+    both ordinality in time and gap-size into the structure's search metadata may prove
+    beneficial, provided that the space costs did not become too onerous.
+  \end{paragraph}
+  \begin{paragraph}{}
+    As demonstrated by the experiments in this work, space cost becomes time cost.
+    Determining what information is absolutely essential for an algorithm to function
+    and discarding what is extraneous can garner significant time savings.
+    The structures used by the original gap-enumeration algorithm would be more amenable
+    to whole schedule reconstruction than the techniques presented in this work, but if
+    all one needs is a measure of worst case response time for a given task, the benefits
+    of the optimizations presented here are undeniable. Furthermore, it would not be
+    difficult to maintain an additional schedule structure that accumulated the positive
+    fills of the gaps during the execution of the gap-enumeration algorithm.
+    Continual, careful optimization of the techniques first explored by Belwal and Cheng
+    has the potential to reap increasing benefits within the growing field of
+    P-FRP response time analysis.
+  \end{paragraph}
 \end{section}
 
 \begin{section}{Acknowledgments}
