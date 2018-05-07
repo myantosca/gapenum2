@@ -1,3 +1,10 @@
+Build Instructions
+==================
+
+Type the following command to build the gentasksets and wcrt executables:
+
+     make
+
 gentasksets
 ===========
 Generates a population of task sets that can be consumed by the wcrt program.
