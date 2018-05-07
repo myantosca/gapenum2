@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[top=1in, bottom=1.25in, left=1in, right=1in]{geometry}
 \usepackage{fontspec}
+\usepackage{xcolor}
 \usepackage{mathtools}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -40,13 +41,12 @@
 \lhead{Michael Yantosca}
 \rfoot{\thepage}
 \newcommand{\todo}[0]{\textbf{\textcolor{red}{TODO}}}
+
 \algloopdefx{ExitWhile}[0]{\textbf{exit while}}
 \algloopdefx{NewIf}[1]{\textcolor{red}{\textbf{if} #1 \textbf{then}}}
 \algloopdefx{NewEndIf}[0]{\textcolor{red}{\textbf{end if}}}
 \algloopdefx{NewElse}[0]{\textcolor{red}{\textbf{else}}}
 \algblock{NewIf}{NewEndIf}
-%\algblock{NewIf}{NewElse}{NewEndIf}
-%\algloopdefx{NewState}[1]{\textcolor{red}{ #1 }}
 
 \pgfplotstableread{./results/taskset-n3-m500-optimization1-1gap.csv}\tasksAa
 \pgfplotstableread{./results/taskset-n5-m500-optimization1-1gap.csv}\tasksBa
@@ -171,8 +171,8 @@
           \For{$q \gets 1, J_{i}$}
             \State $t \gets R_{j} + P_{j}(q-1)$
             \State $kgap \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
-            \State $t_{1} \gets \Call{Entry}{kgap}$
-            \State $t_{2} \gets \Call{Exit}{kgap}$
+            \State $t_{1} \gets entry[kgap]$
+            \State $t_{2} \gets exit[kgap]$
             \While{$kgap \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
@@ -195,8 +195,8 @@
                   \State \Call{Gap-Insert}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
                 \EndIf
               \EndIf
-              \If{$t1 = \Call{Entry}{kgap}$}
-                \State $kgap \gets \Call{Successor-Gap}{t_{1}}$
+              \If{$t1 = entry[kgap]$}
+                \State $kgap \gets \Call{Successor-Gap}{kgap}$
               \EndIf
             \EndWhile
           \EndFor
@@ -290,8 +290,8 @@
           \For{$q \gets 1, J_{i}$}
             \State $t \gets R_{j} + P_{j}(q-1)$
             \State $kgap \gets \Call{Min-Gap}{\sigma_{i}(P|_{0}^{L})}$
-            \State $t_{1} \gets \Call{Entry}{kgap}$
-            \State $t_{2} \gets \Call{Exit}{kgap}$
+            \State $t_{1} \gets entry[kgap]$
+            \State $t_{2} \gets exit[kgap]$
             \While{$kgap \not= \Call{Nil}{\sigma_{i}(P|_{0}^{L})}$}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
@@ -320,8 +320,8 @@
                   \NewEndIf
                 \EndIf
               \EndIf
-              \If{$t1 = \Call{Entry}{kgap}$}
-                \State $kgap \gets \Call{Successor-Gap}{t_{1}}$
+              \If{$t1 = entry[kgap]$}
+                \State $kgap \gets \Call{Successor-Gap}{kgap}$
               \EndIf
             \EndWhile
           \EndFor
@@ -367,13 +367,13 @@
       \caption{Gap-Tranformation Algorithm Optimization 2: No Zero Gaps Reinserted, Linked List}\label{gapxfrm2}
       \begin{algorithmic}[2]
         \Function{Gap-Transform-Positive-List}{$W$, $\sigma_{i}(P|_{0}^{L})$, $\Gamma_{n}$, $j$}
-          \State $J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$
+          \State{$J_{i} \gets \lceil\frac{W - R_{j}}{P_{j}}\rceil$}
           \For{$q \gets 1, J_{i}$}
-            \State $t \gets R_{j} + P_{j}(q-1)$
-            \State $kgap \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$
-            \State $t_{1} \gets \Call{Entry}{kgap}$
-            \State $t_{2} \gets \Call{Exit}{kgap}$
-            \While{$kgap \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$}
+            \State{$t \gets R_{j} + P_{j}(q-1)$}
+            \State \begingroup\color{red}$kgap \gets \Call{Head}{\sigma_{i}(P|_{0}^{L})}$\endgroup
+            \State $t_{1} \gets entry[kgap]$
+            \State $t_{2} \gets exit[kgap]$
+            \While{\begingroup\color{red}$kgap \not= \Call{Tail}{\sigma_{i}(P|_{0}^{L})}$\endgroup}
               \If{$t_{1} > t + P_{j}$}
                 \State \Return $\emptyset$
               \EndIf
@@ -381,26 +381,30 @@
                 \State $t \gets t_{1}$
               \EndIf
               \If{$t_{1} \leq t$ and $t < t_{2}$}
+                \begingroup\color{red}
                 \If{$t + C_{j} \geq t_{2}$}
                   \If{$t > t_{1}$}
-                    \State {$[t_{1},t_{2}) \gets [t_{1},t)$}
+                    \State $entry[kgap] \gets t_{1}$
+                    \State $exit[kgap] \gets t$
                   \Else
-                    \State {\Call{Splice-Out}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t_{2})$}}
+                    \State $\Call{Splice-Out}{\sigma_{i}(P|_{0}^{L}), kgap}$
                   \EndIf
                   \If{$t + C_{j} = t_{2}$}
                     \ExitWhile
                   \EndIf
                 \EndIf
+                \endgroup
                 \If{$t + C_{j} < t_{2}$}
-                    \State {$[t_{1},t_{2}) \gets [t + C_{j},t_{2})$}
-                    \If{$t > t_{1}$}
-                      \State \Call{Splice-In}{$\sigma_{i}(P|_{0}^{L}), [t_{1},t)$}
-                    \EndIf
+                  \State \begingroup\color{red}$entry[kgap] \gets t + C_{j}$\endgroup
+                  \State \begingroup\color{red}$exit[kgap] \gets t_{2}$\endgroup
+                  \If{$t > t_{1}$}
+                    \State \begingroup\color{red}$\Call{Splice-In}{\sigma_{i}(P|_{0}^{L}), kgap, [t_{1},t)}$\endgroup
+                  \EndIf
                   \ExitWhile
                 \EndIf
               \EndIf
-              \If{$t1 = \Call{Entry}{kgap}$}
-                \State $kgap \gets \Call{Next}{t_{1}}$
+              \If{$t1 = entry[kgap]$}
+                \State \begingroup\color{red}$kgap \gets \Call{Next}{kgap}$\endgroup
               \EndIf
             \EndWhile
           \EndFor
